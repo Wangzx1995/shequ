@@ -103,15 +103,16 @@
             <el-divider />
             <el-row class="com-info-group">
                 <p class="com-info-label">小区图片</p>
-                <el-col
+                <!-- <el-col
                     :span="2"
                     v-for="img in upload.fileList"
                     :key="img.value"
-                >
+                > -->
+                <el-col :span="2">
                     <span class="com-info-value">
                         <el-image
                             style="width: 100px; height: 100px"
-                            :src="img.url"
+                            src="url"
                             fit="fill"
                         />
                     </span>
@@ -261,8 +262,7 @@
                             v-model="form.text"
                             maxlength="200"
                             show-word-limit
-                        >
-                        </el-input>
+                        ></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -270,11 +270,13 @@
             <el-row>
                 <el-col :span="24">
                     <el-form-item label="小区图片">
+                        <div style="display: inline-block;width: 100%;">
+                            <imgUpload :imgSetting="imgSetting" />
+                        </div>
                     </el-form-item>
-                    <imgUpload :imgSetting="upload" />
+
                 </el-col>
             </el-row>
-
         </el-form>
     </div>
 </template>
@@ -283,86 +285,82 @@
 import imgUpload from "@/components/common/upload/imgUpload.vue";
 
 export default {
-    name: 'system-CommunityInfo',
+    name: "system-CommunityInfo",
     data() {
         return {
             isEdit: false,
             infoData: {
-                name: 'xx'
+                name: "xx"
             },
             form: {
-                name: '中栋国际1期',
-                address: '浙江省杭州市滨江区西兴街道201号',
-                year: '2016',
-                jzArea: '23600平米',
-                zdArea: '36000平米',
-                greenRate: '30%',
-                rjRate: '89%',
-                people: '陈山',
-                tel: '0551-6217788',
-                text: '小区户型本小区80多栋楼，多为四层，五层，六层，极少七层，主要面积有49平58平73平，楼间距大，采光好生活配套小区北邻500米就是东湖公园东湖银座，小区西北方向1000米就是第 一人民医院教育情况本小区内有迎春中学迎春小学及迎春幼儿园，迎春中学师资力量雄厚，凭房产证可入学，迎春中学新建教学楼。小区不足小区房龄较长，绿化较少'
+                name: "中栋国际1期",
+                address: "浙江省杭州市滨江区西兴街道201号",
+                year: "2016",
+                jzArea: "23600平米",
+                zdArea: "36000平米",
+                greenRate: "30%",
+                rjRate: "89%",
+                people: "陈山",
+                tel: "0551-6217788",
+                text:
+                    "小区户型本小区80多栋楼，多为四层，五层，六层，极少七层，主要面积有49平58平73平，楼间距大，采光好生活配套小区北邻500米就是东湖公园东湖银座，小区西北方向1000米就是第 一人民医院教育情况本小区内有迎春中学迎春小学及迎春幼儿园，迎春中学师资力量雄厚，凭房产证可入学，迎春中学新建教学楼。小区不足小区房龄较长，绿化较少"
             },
             rules: {
                 name: [
                     {
                         required: true,
-                        trigger: 'blur',
-                        message: '请输入小区名称'
+                        trigger: "blur",
+                        message: "请输入小区名称"
                     }
                 ],
                 year: [
                     {
                         required: true,
-                        trigger: 'blur',
-                        message: '请输入建筑年代'
+                        trigger: "blur",
+                        message: "请输入建筑年代"
                     }
                 ],
                 jzArea: [
                     {
                         required: true,
-                        trigger: 'blur',
-                        message: '请输入建筑面积'
+                        trigger: "blur",
+                        message: "请输入建筑面积"
                     }
                 ],
                 rjRate: [
                     {
                         required: true,
-                        trigger: 'blur',
-                        message: '请输入容积率'
+                        trigger: "blur",
+                        message: "请输入容积率"
                     }
                 ],
                 people: [
                     {
                         required: true,
-                        trigger: 'blur',
-                        message: '请输入负责人'
+                        trigger: "blur",
+                        message: "请输入负责人"
                     }
                 ],
                 tel: [
                     {
                         required: true,
-                        trigger: 'blur',
-                        message: '请输入联系电话'
+                        trigger: "blur",
+                        message: "请输入联系电话"
                     }
                 ]
             },
-            dialogImageUrl: '',
-            dialogVisible: false,
-            upload: {
-                limit: 3,
-                fileList: [{ name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100' }, { name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100' }],
+            imgSetting: {
+                limit: 3
             }
-        }
+        };
     },
-    created() {
-
-    },
+    created() {},
     methods: {
         // 提交保存
         commit() {
             this.$refs.form.validate(valid => {
                 if (valid) {
-                    this.isEdit = !this.isEdit
+                    this.isEdit = !this.isEdit;
                     // this.$systemApi.demo.add({
 
                     // }).then(res => {
@@ -371,15 +369,15 @@ export default {
                     //     console.log(e)
                     // })
                 }
-            })
+            });
         },
         // 取消
         cancle() {
-            this.isEdit = false
-        },
+            this.isEdit = false;
+        }
     },
     components: {
         imgUpload
     }
-}
+};
 </script>
