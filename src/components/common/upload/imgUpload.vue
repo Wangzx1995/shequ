@@ -1,89 +1,101 @@
 <template>
-    <div style="overflow: hidden;">
+    <div
+        class="clear"
+        style="padding-bottom:18px;"
+    >
         <form
             class="uploadPicForm clearfix"
             enctype="multipart/form-data"
         >
             <div
+                class="addimg"
+                v-if="this.fileList.length<imgSetting.limit"
+            >
+                <input
+                    type="file"
+                    class="uploadFile"
+                    accept="image/*"
+                    @change="readLocalFile($event)"
+                >
+                <!-- v-if="this.files.length<3 && isImg" -->
+                <i class="el-icon-plus"></i>
+                <span
+                    class="limit"
+                    v-if="!imgSetting.isShow"
+                >最多可上传{{imgSetting.limit}}张</span>
+            </div>
+            <div
                 class="img1 clearfix"
-                v-for="(urls, index) in imgs "
+                :class="imgSetting.limit>1 ? 'ismargin' : 'nomargin' "
+                v-for="(urls, index) in fileList "
                 :key="urls.value"
             >
-                <!-- <div
-                    :class="{deleteBtn:!isImg}"
-                    class="delete clearfix"
-                    v-on:click="deleteImg(index)"
-                > -->
                 <div
                     class="delete clearfix"
                     @click="deleteImg(index)"
                 >
-                    <i class="el-icon-circle-close"></i>
+                    <i class="el-icon-error"></i>
                 </div>
                 <img
+                    v-imgPreview
                     class="img"
-                    :src="urls"
+                    :src="$joinImgPrefix(urls)"
                 />
             </div>
-            <div
-                class="addimg"
-                @click="imgClick()"
-            >
-                <!-- v-if="this.files.length<3 && isImg" -->
-                <i class="el-icon-plus"></i>
-            </div>
-            <input
-                style="float:left;display: none;"
-                type="file"
-                id='uploadFile'
-                accept="image/*"
-                @change="readLocalFile($event)"
-            >
+
         </form>
     </div>
 </template>
 
 <script>
+import { fcall } from 'q';
 export default {
     props: {
-        imgSetting: Object
+        imgSetting: Object,
+        imgUrls: {
+            type: Array,
+            default: function () {
+                return []
+            }
+        },
+        getImgUrl: Function
     },
     data() {
         return {
-            imgs: [],
             files: [],
             fileList: [],
             isImg: true
         };
     },
-    mounted() {},
+    mounted() {
+        this.fileList = this.imgUrls
+        /*this.fileList = this.imgUrls.filter(url => {
+            return !!url
+        })*/
+    },
+    watch: {
+        'fileList'() {
+            // this.$emit('getImgUrl', this.fileList.join(','))
+        }
+    },
     methods: {
         //删除图片
         deleteImg(index) {
-            this.imgs.splice(index, 1);
             this.fileList.splice(index, 1);
-        },
-        //图片click
-        imgClick() {
-            document.getElementById("uploadFile").click();
+            this.$$message({
+                message: "图片删除成功！",
+                type: "success"
+            });
+            this.getImgUrl(this.fileList.join(','))
+
         },
         //图片上传
         readLocalFile(e) {
-            // alert(JSON.stringify(e))
-            let localFile = document.getElementById("uploadFile").files[0];
-            // alert(localFile.name+'--'+localFile.type+'--'+localFile.size)
-            // console.log(localFile)
+            let localFile = e.target.files[0];
             if (!localFile || localFile.size == 0) {
                 return;
             }
-            //开关控制
-            // this.isImg = false;
-            // this.$refs.addSafeBtn.disabled = true;
-            // console.log(this.$refs.addSafeBtn.disabled)
-
-            // console.log(document.getElementById("uploadFile").files)
             this.files.push(localFile);
-            // alert(JSON.stringify(localFile))
 
             //获取图片base64代码
             var reader = new FileReader();
@@ -91,144 +103,106 @@ export default {
             var current = this;
             content = reader.readAsDataURL(localFile, "UTF-8");
 
-            reader.onload = function(event) {
+            reader.onload = (event) => {
                 content = event.target.result;
-                current.imgs.push(content);
+                // current.imgs.push(content);
             };
-            reader.onerror = function(event) {
+            reader.onerror = (event) => {
                 alert("error");
             };
             //上传
             var formData = new FormData();
             formData.append("file", this.files[this.files.length - 1]);
             // console.log(formData.get("file"))
-            this.$systemApi.demo
-                .uploadUrl(formData)
+            // this.$propertyApi.upload.upload(formData)
+            this.$systemApi.upload.upload(formData)
                 .then(res => {
-                    if (res.success) {
-                        // this.$refs.addSafeBtn.disabled = false;
-                        this.$message({
+                    if (res.code == 1000) {
+                        this.$$message({
                             message: "图片上传成功！",
                             type: "success"
                         });
-                        this.fileList.push(res.data);
-                        // this.isImg = true;
-                        console.log(this.imgs);
+                        this.fileList.push(res.data[0].fileUrl);
+                        this.getImgUrl(this.fileList.join(','))
                     }
                 })
                 .catch(res => {
                     console.log(res);
                 });
+        },
+        clearFileList() {
+            this.fileList = []
         }
-    }
+    },
 };
 </script>
 
 <style lang="less">
 //拍照
 .uploadPicForm {
+    .ismargin {
+        margin-left: 30px;
+    }
     .img1 {
         float: left;
-        margin: 0 0.4rem;
         position: relative;
-        border: 1px solid #ccc;
-
         .delete {
             text-align: right;
             position: absolute;
-            right: 0px;
+            right: -10px;
+            top: -10px;
             padding: 0px;
-            background: rgba(255, 255, 255, 0.4);
-
             i {
                 float: left;
+                font-size: 20px;
+                opacity: 0.5;
+                cursor: pointer;
             }
         }
-
         .img {
             border: none;
             display: block;
-            width: 6rem;
-            height: 6rem;
+            height: 120px;
         }
     }
     .addimg {
-        width: 6rem;
-        height: 6rem;
+        width: 160px;
+        height: 120px;
         border: 1px dashed #cccccc;
         border-radius: 6px;
         float: left;
-        margin: 0 0.4rem;
         padding: 0;
         background: #fbfdff;
-
+        position: relative;
+        .uploadFile {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            opacity: 0;
+            z-index: 1;
+        }
         i {
             display: inline-block;
-            width: 6rem;
-            height: 6rem;
-            line-height: 6rem;
+            width: 160px;
+            height: 120px;
+            line-height: 120px;
             text-align: center;
             font-size: 25px;
             cursor: pointer;
             color: #cccccc;
         }
+        .limit {
+            font-size: 14px;
+            color: #606266;
+        }
     }
-}
-
-.btnBg {
-    background: #cccccc !important;
-}
-
-.deleteBtn {
-    display: none;
-}
-
-.listDeal {
-    .list {
-        border-bottom: 1px solid #ccc;
-        padding: 0.625rem;
-
-        b {
-            display: inline-block;
-            font-size: 1.125rem;
-            width: 15rem;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .auditing {
-            float: right;
-            margin-right: 2rem;
-        }
-
-        .right {
-            float: right;
-            color: #03a9f4;
-        }
-
-        .chaoshi {
-            color: red;
-            float: right;
-            margin-right: 2rem;
-            font-size: 0.5rem;
-            line-height: 1rem;
-            border: 1px solid red;
-            margin-top: 6px;
-        }
-
-        div {
-            line-height: 1.875rem;
-        }
-
-        .flex {
-            display: flex;
-            padding-left: 1.25rem;
-
-            .type {
-                flex: 1;
-                font-size: 0.875rem;
-            }
+    .addimg:hover {
+        border-color: #409eff;
+        i {
+            color: #409eff;
         }
     }
 }

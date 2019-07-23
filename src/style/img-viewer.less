@@ -1,0 +1,45 @@
+.com-img-view-container {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 999999999999;
+    animation-duration: .3s;
+    animation-fill-mode : forwards;
+    display: none;
+    .com-img-view-mask {
+        background-color: rgba(0, 0, 0, .3);
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+    .com-img-view-pic {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transition: .3s;
+        max-width: 100%;
+        max-height: 100%;
+    }
+    .com-img-view-close {
+        width: 60px;
+        height: 60px;
+        background-color: rgba(0, 0, 0, 0.5);
+        position: absolute;
+        top: 0;
+        right: 0;
+        color: #fff;
+        font-size: 50px;
+        z-index: 1;
+        text-align: right;
+        border-bottom-left-radius: 40px;
+        cursor: pointer;
+        transition: .3s;
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+    }
+}

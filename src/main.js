@@ -15,6 +15,9 @@ import './assets/fonts/iconfont.css'
 import './style/common.less'
 import './style/animate.less'
 import './style/element.less'
+import './style/system.less'
+import './style/property.less'
+import './style/img-viewer.less'
 
 // 使用v-dialogDrag   可以拖动 vue-dialog
 import '@/components/directives'
@@ -64,15 +67,15 @@ new Vue({
     mounted() {
         ServerMixin.Event.$on('login', () => {
             this.$store.dispatch('logout')
-            /*
-            .then(() => {
-                this.$router.push({
-                    path: '/login',
-                    query: {
-                        redirectUrl: location.href
-                    }
-                })
-            })*/
+                /*
+                .then(() => {
+                    this.$router.push({
+                        path: '/login',
+                        query: {
+                            redirectUrl: location.href
+                        }
+                    })
+                })*/
         })
     }
 })

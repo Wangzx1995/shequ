@@ -10,7 +10,7 @@ export const dateFormat = (date, format = 'yyyy/MM/dd') => {
         return '-'
     }
     let d = new Date(date)
-    
+
     let o = {
         'M+': d.getMonth() + 1,
         // 月份
@@ -27,7 +27,7 @@ export const dateFormat = (date, format = 'yyyy/MM/dd') => {
         'q+': Math.floor((d.getMonth() + 3) / 3),
         // 季度
         'S': d.getMilliseconds()
-    // 毫秒
+        // 毫秒
     }
     let week = {
         '0': '\u65e5',
@@ -40,19 +40,19 @@ export const dateFormat = (date, format = 'yyyy/MM/dd') => {
     }
     if (/(y+)/.test(format)) {
         format = format.replace(RegExp.$1, (d.getFullYear() + '')
-                .substr(4 - RegExp.$1.length))
+            .substr(4 - RegExp.$1.length))
     }
     if (/(E+)/.test(format)) {
         format = format.replace(
-                        RegExp.$1,
-                        ((RegExp.$1.length > 1) ? (RegExp.$1.length > 2 ? '/u661f/u671f'
-                                : '/u5468')
-                                : '') + week[d.getDay() + ''])
+            RegExp.$1,
+            ((RegExp.$1.length > 1) ? (RegExp.$1.length > 2 ? '/u661f/u671f'
+                : '/u5468')
+                : '') + week[d.getDay() + ''])
     }
     for (var k in o) {
         if (new RegExp('(' + k + ')').test(format)) {
             format = format.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k])
-                    : (('00' + o[k]).substr(('' + o[k]).length)))
+                : (('00' + o[k]).substr(('' + o[k]).length)))
         }
     }
     return format
@@ -60,8 +60,20 @@ export const dateFormat = (date, format = 'yyyy/MM/dd') => {
 
 // 配置图片前缀
 export const joinImgPrefix = (val) => {
-    if(!val) {
+    if (!val) {
         return val
     }
     return window.imgPreSrc + val
+}
+export function getItemName(value, arr, key, prop) {
+    // value 值
+    // arr 查询的数组
+    // 查找数组中哪一项的key的值等于value
+    // 返回这一项的prop的值
+    if (!!value && !!arr && arr.length) {
+        const item = arr.find(item => {
+            return item[key] == value
+        })
+        return item[prop];
+    }
 }

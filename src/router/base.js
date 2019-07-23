@@ -1,5 +1,6 @@
 
 import Login from '@/view/Login'
+import Index from '@/view/Index'
 
 export default [
   {
@@ -8,7 +9,7 @@ export default [
       title: '首页'
     },
     hiddenMenu: true,
-    redirect: '/system/community-info'
+    component: Index
   },
   {
     path: '/login/',

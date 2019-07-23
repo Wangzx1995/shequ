@@ -1,0 +1,291 @@
+.system {
+
+    //通用样式
+    input {
+        border: 1px solid #e7eaec;
+    }
+
+    button {
+        border-radius: 4px;
+    }
+
+    //搜索框样式
+    .selectBox {
+        &:after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+
+        input {
+            width: 200px;
+        }
+
+        label,
+        input,
+        button {
+            font-size: 16px;
+        }
+
+        button {
+            height: 40px;
+        }
+
+        .el-form-item {
+            &:last-child {
+                float: right;
+                margin-right: 0
+            }
+        }
+    }
+
+    //main样式
+    .com-main-inner {
+        .com-main-inner-title {
+            margin-bottom: 20px;
+
+            button {
+                height: 30px;
+            }
+        }
+
+        .com-main-inner-table {
+            .el-table--enable-row-hover .el-table__body tr:hover>td {
+                background-color: #4390f0 !important;
+                color: #ffffff !important;
+
+                i {
+                    color: #ffffff;
+                }
+
+                .line:before {
+                    background-color: #e7eaec;
+                }
+            }
+
+            i {
+                cursor: pointer;
+            }
+
+            .el-button--primary {
+                color: #4390f0;
+                background: none;
+                border: none;
+            }
+
+            .el-button--danger {
+                color: #ec2a17;
+                background: none;
+                border: none;
+            }
+
+            .line {
+                width: 1px;
+                height: 30px;
+                vertical-align: middle;
+                margin: 0 10px;
+                padding-left: 0px;
+
+                &:before {
+                    background-color: #e7eaec !important;
+                }
+            }
+
+            .el-checkbox__inner {
+                z-index: 0;
+            }
+
+            .el-table__row {
+                .cell {
+                    line-height: 40px;
+                }
+            }
+
+            .has-gutter {
+                .cell {
+                    line-height: 40px;
+                }
+            }
+        }
+    }
+
+    .dialog-footer {
+        .el-button {
+            padding: 7px 15px;
+        }
+    }
+
+    //弹窗样式
+    .dialog-form {
+        label {
+            height: 30px;
+            line-height: 30px;
+        }
+
+        input {
+            height: 30px;
+            line-height: 30px;
+            border-radius: 4px;
+        }
+
+        .el-form-item {
+            input {
+                width: 200px;
+            }
+        }
+
+        .el-form-item__content,
+        i {
+            line-height: 30px;
+        }
+
+        .el-form-item {
+            margin-bottom: 20px;
+        }
+
+        .is-error {
+            margin-bottom: 30px;
+        }
+
+        .longInput {
+            input {
+                width: 100%;
+            }
+        }
+
+        .cell {
+            .el-button--danger {
+                color: #ec2a17;
+                background: none;
+                border: none;
+                padding: 0px;
+            }
+        }
+
+        .el-checkbox-button {
+            margin: 0 5px 5px 0;
+        }
+
+        .el-checkbox-button__inner {
+            padding: 0 20px;
+            line-height: 28px;
+            border-left: 1px solid #dcdfe6;
+            border-radius: 2px !important;
+        }
+
+        .is-checked {
+            .el-checkbox-button__inner {
+                border-left: 1px solid #4390f0 !important;
+            }
+        }
+
+        .is-focus {
+            .el-checkbox-button__inner {
+                border: 1px solid #dcdfe6;
+            }
+        }
+    }
+}
+
+//地图标记
+.mapTagging {
+    position: relative;
+
+    .main {
+        position: absolute;
+        top: 30px;
+        right: 30px;
+
+        .el-button--mini {
+            padding: 6px 15px;
+        }
+
+        .el-select {
+            margin-right: 10px;
+
+            .el-input__icon {
+                line-height: 30px;
+                height: 30px;
+            }
+
+            input {
+                line-height: 30px;
+                height: 30px;
+            }
+        }
+
+        .rightMain {
+            margin-right: 75px;
+            margin-top: 15px;
+            border: 1px solid #e7eaec;
+
+            .shebei {
+                background: #ffffff;
+
+                .el-tabs__nav {
+                    .is-active {
+                        color: #fff;
+                        background-color: #4390f0;
+                    }
+                }
+
+                .scoll {
+                    overflow-y: scroll;
+                    flex: auto;
+                }
+
+                .el-tab-pane {
+                    width: 250px;
+                    height: 400px;
+                }
+
+                .el-checkbox-button {
+                    margin: 0 5px 10px 0;
+                }
+
+                .el-checkbox-button__inner {
+                    padding: 0 20px;
+                    line-height: 28px;
+                    border-left: 1px solid #dcdfe6;
+                    border-radius: 2px !important;
+                }
+
+                .is-checked {
+                    .el-checkbox-button__inner {
+                        border-left: 1px solid #4390f0 !important;
+                    }
+                }
+
+                .is-focus {
+                    .el-checkbox-button__inner {
+                        border: 1px solid #dcdfe6;
+                    }
+                }
+
+                .el-collapse-item__content {
+                    padding-bottom: 0px;
+                }
+
+                .el-checkbox {
+                    line-height: 30px;
+                    height: 30px;
+                    display: block;
+                }
+            }
+
+            .cangku {
+                background: #ffffff;
+                width: 150px;
+                height: 400px;
+                padding: 0px 50px;
+                overflow-y: scroll;
+
+                .el-checkbox {
+                    line-height: 30px;
+                    height: 30px;
+                    width: 100%;
+                }
+            }
+        }
+    }
+}

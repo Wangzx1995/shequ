@@ -2,56 +2,57 @@
 
 import Frame from '@/components/frame/Frame'
 
-export default [
-    {
+export default [{
         path: '/system/',
         component: Frame,
-        children: [
-            {
-                path: 'community-info',
-                meta: {
-                    title: '小区信息'
-                },
-                iconClz: 'icon-x-order',
-                component: () => import("@/view/system/CommunityInfo/CommunityInfo")
+        children: [{
+            path: 'CommunityInfo-index',
+            meta: {
+                title: '小区信息'
             },
-        ]
+            iconClz: 'icon-x-ziliao',
+            component: () =>
+                import ("@/view/system/CommunityInfo/index")
+        }, ]
     },
     {
         path: '/system/',
         meta: {
             title: '物业管理'
         },
-        iconClz: 'icon-x-wuyebaoxiu',
+        iconClz: 'icon-x-wuyeguanli',
         component: Frame,
-        children: [
-            {
-                path: 'property',
+        children: [{
+                path: 'estateManage-property',
                 meta: {
                     title: '物业信息'
                 },
-                component: () => import("@/view/system/estateManage/property")
+                component: () =>
+                    import ("@/view/system/estateManage/property")
             },
             {
-                path: 'organization',
+                path: 'estateManage-organization',
                 meta: {
                     title: '组织架构管理'
                 },
-                component: () => import("@/view/system/estateManage/organization")
+                component: () =>
+                    import ("@/view/system/estateManage/organization")
             },
             {
-                path: 'job',
+                path: 'estateManage-job',
                 meta: {
                     title: '职务管理'
                 },
-                component: () => import("@/view/system/estateManage/job")
+                component: () =>
+                    import ("@/view/system/estateManage/job")
             },
             {
-                path: 'worker',
+                path: 'estateManage-worker',
                 meta: {
                     title: '员工管理'
                 },
-                component: () => import("@/view/system/estateManage/worker")
+                component: () =>
+                    import ("@/view/system/estateManage/worker")
             }
         ]
     },
@@ -60,22 +61,23 @@ export default [
         meta: {
             title: '账号管理'
         },
-        iconClz: 'icon-x-wuyebaoxiu',
+        iconClz: 'icon-x-zhanghaoguanli',
         component: Frame,
-        children: [
-            {
-                path: 'account',
+        children: [{
+                path: 'accountManage-account',
                 meta: {
                     title: '平台账号管理'
                 },
-                component: () => import("@/view/system/accountManage/account")
+                component: () =>
+                    import ("@/view/system/accountManage/account")
             },
             {
-                path: 'authority',
+                path: 'accountManage-authority',
                 meta: {
                     title: '角色权限管理'
                 },
-                component: () => import("@/view/system/accountManage/authority")
+                component: () =>
+                    import ("@/view/system/accountManage/authority")
             }
         ]
     },
@@ -84,22 +86,23 @@ export default [
         meta: {
             title: 'APP设置'
         },
-        iconClz: 'icon-x-wuyebaoxiu',
+        iconClz: 'icon-x-app1',
         component: Frame,
-        children: [
-            {
-                path: 'ownerApp',
+        children: [{
+                path: 'AppSetting-ownerApp',
                 meta: {
                     title: '业主APP'
                 },
-                component: () => import("@/view/system/AppSetting/ownerApp")
+                component: () =>
+                    import ("@/view/system/AppSetting/ownerApp")
             },
             {
-                path: 'propertyApp',
+                path: 'AppSetting-propertyApp',
                 meta: {
                     title: '物业APP'
                 },
-                component: () => import("@/view/system/AppSetting/propertyApp")
+                component: () =>
+                    import ("@/view/system/AppSetting/propertyApp")
             }
         ]
     },
@@ -108,22 +111,23 @@ export default [
         meta: {
             title: '设备管理'
         },
-        iconClz: 'icon-x-wuyebaoxiu',
+        iconClz: 'icon-x-shebeiguanli1',
         component: Frame,
-        children: [
-            {
-                path: 'manage',
+        children: [{
+                path: 'deviceManage-manage',
                 meta: {
                     title: '设备管理'
                 },
-                component: () => import("@/view/system/deviceManage/manage")
+                component: () =>
+                    import ("@/view/system/deviceManage/manage")
             },
             {
-                path: 'label',
+                path: 'deviceManage-label',
                 meta: {
                     title: '设备标签'
                 },
-                component: () => import("@/view/system/deviceManage/label")
+                component: () =>
+                    import ("@/view/system/deviceManage/label")
             }
         ]
     },
@@ -132,93 +136,89 @@ export default [
         meta: {
             title: '地图管理'
         },
-        iconClz: 'icon-x-wuyebaoxiu',
+        iconClz: 'icon-x-ditu',
         component: Frame,
-        children: [
-            {
-                path: 'coordinate',
+        children: [{
+                path: 'mapManage-coordinate',
                 meta: {
                     title: '坐标系管理'
                 },
-                component: () => import("@/view/system/mapManage/coordinate")
+                component: () =>
+                    import ("@/view/system/mapManage/coordinate")
             },
             {
-                path: 'tagging',
+                path: 'mapManage-tagging',
                 meta: {
                     title: '点位标注'
                 },
-                component: () => import("@/view/system/mapManage/tagging")
+                component: () =>
+                    import ("@/view/system/mapManage/tagging")
             }
         ]
     },
     {
         path: '/system/',
         component: Frame,
-        children: [
-            {
-                path: 'dataDictionary',
-                meta: {
-                    title: '数据字典'
-                },
-                iconClz: 'icon-x-about_line',
-                component: () => import("@/view/system/dataDictionary/dataDictionary"),
+        children: [{
+            path: 'dataDictionary-index',
+            meta: {
+                title: '数据字典'
             },
-        ]
+            iconClz: 'icon-x-shujuzidian',
+            component: () =>
+                import ("@/view/system/dataDictionary/index"),
+        }, ]
     },
     {
         path: '/system/',
         component: Frame,
-        children: [
-            {
-                path: 'configure',
-                meta: {
-                    title: '系统配置'
-                },
-                iconClz: 'icon-x-about_line',
-                component: () => import("@/view/system/systemConfiguration/configure"),
+        children: [{
+            path: 'systemConfiguration-index',
+            meta: {
+                title: '系统配置'
             },
-        ]
+            iconClz: 'icon-x-yunying',
+            component: () =>
+                import ("@/view/system/systemConfiguration/index"),
+        }, ]
     },
     {
         path: '/system/',
         component: Frame,
-        children: [
-            {
-                path: 'journal',
-                meta: {
-                    title: '日志管理'
-                },
-                iconClz: 'icon-x-about_line',
-                component: () => import("@/view/system/logManage/journal")
+        children: [{
+            path: 'logManage-index',
+            meta: {
+                title: '日志管理'
             },
-        ]
+            iconClz: 'icon-x-rizhiguanli',
+            component: () =>
+                import ("@/view/system/logManage/index")
+        }, ]
     },
     {
         path: '/system/',
         component: Frame,
-        children: [
-            {
-                path: 'backups',
-                meta: {
-                    title: '系统备份'
-                },
-                iconClz: 'icon-x-about_line',
-                component: () => import("@/view/system/systemBackup/backups")
+        children: [{
+            path: 'systemBackup-index',
+            meta: {
+                title: '系统备份'
             },
-        ]
+            iconClz: 'icon-x-xitongbeifenguanli',
+            component: () =>
+                import ("@/view/system/systemBackup/index")
+        }, ]
     },
     {
         path: '/system/',
         component: Frame,
-        children: [
-            {
-                path: 'aboutUs',
-                meta: {
-                    title: '关于我们'
-                },
-                iconClz: 'icon-x-about_line',
-                component: () => import("@/view/system/aboutUs/aboutUs")
+        children: [{
+            path: 'aboutUs-index',
+            meta: {
+                title: '关于我们'
             },
-        ]
+            iconClz: 'icon-x-guanyuwomen',
+            component: () =>
+                import ("@/view/system/aboutUs/index")
+        }, ]
     }
 ]

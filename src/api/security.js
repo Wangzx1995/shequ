@@ -1,12 +1,14 @@
-import { doExec } from '@/api/request'
+import {
+    doExec
+} from '@/api/request'
 
-const apiPrefix = window.apiPrefix || '/'
+const apiPrefix = window.apiPrefixSecurity || '/'
 
 export const security = {
-  demo: {
-    add (opts) {
-      // return doExec(`${apiPrefix}securityLog/selectList`, opts, null, 'get')
-      return doExec(`${apiPrefix}securityLog/selectList`, opts)
+    event: {
+        list (opts) {
+            // return doExec(`${apiPrefix}securityLog/selectList`, opts, null, 'get')
+            return doExec(`${apiPrefix}secInc/eventSel`, opts)
+        }
     }
-  }
 }

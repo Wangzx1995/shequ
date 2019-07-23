@@ -84,9 +84,8 @@
     methods: {
       // 退出登录
       logout () {
-        this.$$confirm({
-          type: 'warning',
-          message: '确认退出当前系统?'
+        this.$$confirm('确认退出当前系统?', '提示', {
+            type: 'warning'
         }).then(() => {
           this.$store.dispatch("logout")
         })

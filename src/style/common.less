@@ -2,14 +2,31 @@
     margin: 0;
     padding: 0;
 }
-
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    overflow: auto;
+    background-color: #e7ebec;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #fff;
+    border-left: 2px solid #e7ebec;
+    border-right: 2px solid #e7ebec;
+}
 html {
     background-color: #f5f5f5;
     color: #1e1e1e;
+    font-family: 微软雅黑;
+    height: 100%;
 }
-
+body {
+    min-width: 1200px;
+}
 a {
     text-decoration: none
+}
+ul,li {
+    list-style: none;
 }
 
 .clear:after {
@@ -25,6 +42,12 @@ a {
 .fr {
     float: right;
 }
+.flex {
+    display: flex;
+    & > div {
+        flex: 1;
+    }
+}
 
 [class*="icon-x-"] {
     font-family: "iconfont" !important;
@@ -32,6 +55,15 @@ a {
     font-style: normal;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+.com-space {
+    height: 15px;
+}
+.com-space20 {
+    height: 20px;
+}
+.color-static:active,.color-static:hover {
+    color: inherit;
 }
 
 /*sidebar*/
@@ -49,6 +81,22 @@ a {
         .sidebar-collapse .el-icon-s-fold {
             transform: rotate(-180deg) translateX(30%);
         }
+    }
+    .el-menu-item, .el-submenu__title {
+        height: 66px;
+        line-height: 66px;
+        padding-left: 60px !important;
+        padding-right: 60px !important;
+        transition: .4s;
+    }
+    &.collapse {
+        .el-menu-item, .el-submenu__title {
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+        }
+    }
+    .el-submenu__icon-arrow {
+        right: 60px;
     }
 }
 
@@ -88,6 +136,7 @@ a {
     top: 129px;
     right: 0;
     left: 0;
+    
 
     &::-webkit-scrollbar {
         width: 0;
@@ -105,10 +154,6 @@ a {
         width: 100%;
     }
 
-    .el-submenu .el-menu-item {
-        padding: 0 20px !important;
-    }
-
     li {
         position: relative;
 
@@ -117,8 +162,8 @@ a {
             width: 3px;
             content: "";
             position: absolute;
-            top: 5px;
-            bottom: 5px;
+            top: 13px;
+            bottom: 13px;
             left: 0;
             z-index: 1;
         }
@@ -131,6 +176,9 @@ a {
 
         &.is-active {
             &.is-opened {
+                & > div * {
+                    color: #fff;
+                }
                 &:before {
                     background-color: #4390f0;
                 }
@@ -230,6 +278,13 @@ a {
         font-size: 27px;
         color: #a0a0a0;
     }
+    .el-badge__content.is-fixed.is-dot {
+        width: 7px;
+        height: 7px;
+        right: 10px;
+        top: 10px;
+        border: none;
+    }
 }
 
 /*页面标签*/
@@ -260,8 +315,10 @@ a {
             border-left: 1px solid #e7eaec;
         }
 
-        &.el-tag--plain a {
-            color: #999;
+        &.el-tag--plain {
+            a {
+                color: #999;
+            }
         }
 
         &.el-tag--light {
@@ -310,6 +367,17 @@ a {
         border-radius: 3px;
     }
 }
+// 表格操作按钮分割线
+.el-table .cell .com-page-header-title {
+    height: 30px;
+    vertical-align: middle;
+    margin: 0 10px;
+    padding-left: 0px;
+    &:before {
+        background-color: #e7eaec !important;
+        width: 1px !important;
+    }
+}
 
 /*通用*/
 .com-info-container {
@@ -336,5 +404,235 @@ a {
     .com-info-value {
         font-size: 18px;
         color: #333;
+    }
+}
+
+
+
+
+
+
+
+
+
+/******************** custom color *******************/
+body.system {
+    .el-dialog__header {
+        background: #f4f8fe;
+        .el-dialog__title {
+            color: #288df6;
+        }
+    }
+    .el-table  {
+        th {
+            background: #edf3f9;
+        }
+    }
+}
+
+body.property {
+    .com-logo {
+        background-image: url('./../assets/logo-property.png');
+    }
+    /*sidebar*/
+    .com-left-menu {
+
+        li {
+            &.is-active {
+                &:before {
+                    background-color: #00a2a6;
+                }
+            }
+            &.is-active {
+                &.is-opened {
+                    &:before {
+                        background-color: #00a2a6;
+                    }
+                }
+            }
+        }
+    }
+    /*页面标签*/
+    .header-page-tab {
+        .el-tag {
+            &.el-tag--light {
+                border-bottom-color: #00a2a6;
+                & a {
+                    color: #21b2c6;
+                }
+            }
+        }
+    }
+
+    /*main*/
+    .com-page-header-title {
+        &:before {
+            background-color: #00a2a6;
+        }
+    }
+    .el-dialog__header {
+        background: #f2fafc;
+        .el-dialog__title {
+            color: #21b2c6;
+        }
+    }
+    .el-table  {
+        th {
+            background: #f2fafc;
+        }
+    }
+}
+
+body.security {
+    .el-dialog__header {
+        border-bottom: 1px solid #e8e8e8;
+    }
+    .el-table  {
+        thead {
+            color: #1e1e1e;
+        }
+        tr.bg {
+            background-color: #f6f6f6;
+        }
+        td {
+            padding: 0;
+        }
+        th {
+            background-color: #fef4e9;
+        }
+    }
+    .el-table--enable-row-hover .el-table__body tr:hover>td {
+        background-color: #fef4e9;
+        color: #f79623;
+        // border: 1px solid #f79623;
+        // outline-offset: 1px;
+    }
+    .el-menu--popup {
+        min-width: 148px;
+        text-align: center;
+        li {
+            padding: 0 20px;
+        }
+    }
+    /*页面标签*/
+    .header-page-tab {
+        .el-tag {
+            &.el-tag--light {
+                border-bottom-color: #f79623;
+                & a {
+                    color: #f79623;
+                }
+            }
+        }
+    }
+
+    /*main*/
+    .com-page-header-title {
+        &:before {
+            background-color: #f79623;
+        }
+    }
+    .ele-s-title-security {
+        font-size: 18px;
+    }
+    .com-header {
+        position: static;
+        background: #040430;
+        .com-header-right * {
+            color: #fff;
+        }
+        .com-header-inner-security {
+            display: flex;
+            .com-logo {
+                width: 230px;
+                background-image: url('./../assets/security-logo.png');
+                background-position: 0 center;
+                transition: .2s;
+            }
+            @media screen  and (max-width: 1510px) {
+                .com-logo {
+                    width: 65px;
+                }
+            }
+            .com-top-menu {
+                display: flex;
+                flex: 1;
+                border: none;
+                padding: 0 20px;
+                & > li {
+                    flex: 1;
+                    text-align: center;
+                    padding: 0;
+                }
+                .el-submenu__title,.ele-p-title.p10 {
+                    padding: 0 10px;
+                }
+                .el-menu-item, .el-submenu__title {
+                    height: 88px;
+                    line-height: 88px;
+                    border: none;
+                }
+                .ele-p-title {
+                    font-size: 20px;
+                    font-family: simsun;
+                }
+                .el-submenu__icon-arrow {
+                    font-size: 18px;
+                    color: #fff;
+                    margin-top: 0;
+                }
+
+            }
+            .com-header-right {
+                width: 255px;
+                margin-right: 15px;
+                .header-btn-bell, .header-btn-help {
+                    margin-right: 20px;
+                    .ico {
+                        font-size: 25px;
+                    }
+                }
+                .header-user-avatar {
+                    margin-left: 20px;
+                }
+                .header-divider {
+                    background: #50506f;
+                }
+            }
+        }
+        .header-page-tab {
+            border: none;
+            background: #fff;
+            border-bottom:1px solid rgba(238,238,238,1);
+        }
+    }
+    /*子菜单*/
+    .el-menu--horizontal {
+        &[x-placement="bottom-start"] {
+            margin-top: -9px;
+            &:before {
+                position: absolute;
+                content: "\e664";
+                display: block;
+                font-family: "iconfont" !important;
+                color: #fff;
+                font-size: 16px;
+                transform: rotate(180deg);
+                right: 5px;
+                top: -6px;
+            }
+        }
+        box-shadow:0px 0px 6px 0px rgba(46,194,140,0.13);
+        .el-menu--popup {
+            background-color: #fff !important;
+            .el-menu-item {
+                background-color: #fff !important;
+                color: #333 !important;
+                &:hover,&.is-active {
+                    color: #f79623 !important;
+                    background: #fef4e9 !important;
+                }
+            }
+        }
     }
 }

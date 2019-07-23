@@ -1,17 +1,21 @@
 <template>
-    <el-pagination
-        @size-change="onSizeChange"
-        @current-change="onCurrentChange"
-        :current-page="pageIndex"
-        :page-sizes="pageSizes"
-        :page-size="rows"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-    />
+    <div >
+        <el-pagination
+            @size-change="onSizeChange"
+            @current-change="onCurrentChange"
+            :current-page="pageIndex"
+            :page-sizes="pageSizes"
+            :page-size="rows"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total"
+            :style="{'textAlign': align}"
+        />
+    </div>
 </template>
 <script>
     export default {
         props: {
+            align: null,
             pageSizes: {
                 type: Array,
                 default: () => {
