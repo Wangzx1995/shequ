@@ -6,105 +6,57 @@
                 :model="selectForm"
                 class="demo-form-inline"
                 label-position="left"
+                ref="selectForm"
             >
                 <el-form-item label="所属片区">
-                    <el-select
-                        clearable
-                        v-model="selectForm.user"
-                        placeholder="请选择片区"
-                    >
-                        <el-option
-                            label="片区一"
-                            value="shanghai"
-                        ></el-option>
-                        <el-option
-                            label="片区二"
-                            value="beijing"
-                        ></el-option>
-                    </el-select>
+                    <areaId v-model="selectForm.areaId" />
                 </el-form-item>
                 <el-form-item label="所属楼栋">
-                    <el-select
-                        clearable
-                        v-model="selectForm.user"
-                        placeholder="请选择楼栋"
-                    >
-                        <el-option
-                            label="楼栋一"
-                            value="shanghai"
-                        ></el-option>
-                        <el-option
-                            label="楼栋二"
-                            value="beijing"
-                        ></el-option>
-                    </el-select>
+                    <buildingId
+                        :areaId="selectForm.areaId"
+                        v-model="selectForm.buildingId"
+                    />
                 </el-form-item>
                 <el-form-item label="所属单元">
-                    <el-select
-                        clearable
-                        v-model="selectForm.user"
-                        placeholder="请选择单元"
-                    >
-                        <el-option
-                            label="单元一"
-                            value="shanghai"
-                        ></el-option>
-                        <el-option
-                            label="单元二"
-                            value="beijing"
-                        ></el-option>
-                    </el-select>
+                    <elementId
+                        :buildingId="selectForm.buildingId"
+                        v-model="selectForm.elementId"
+                    />
                 </el-form-item>
                 <el-form-item label="所属房屋">
-                    <el-select
-                        clearable
-                        v-model="selectForm.user"
-                        placeholder="请选择房屋"
-                    >
-                        <el-option
-                            label="房屋一"
-                            value="shanghai"
-                        ></el-option>
-                        <el-option
-                            label="房屋二"
-                            value="beijing"
-                        ></el-option>
-                    </el-select>
+                    <roomId
+                        :elementId="selectForm.elementId"
+                        v-model="selectForm.roomId"
+                    />
                 </el-form-item>
                 <el-form-item label="身份类型">
-                    <el-select
-                        clearable
-                        v-model="selectForm.user"
-                        placeholder="请选择身份类型"
-                    >
-                        <el-option
-                            label="身份类型一"
-                            value="shanghai"
-                        ></el-option>
-                        <el-option
-                            label="身份类型二"
-                            value="beijing"
-                        ></el-option>
-                    </el-select>
+                    <Dictionary
+                        :typeCode="1007"
+                        v-model="selectForm.identityType"
+                    />
                 </el-form-item>
                 <el-form-item label="关键词">
                     <el-input
-                        v-model="selectForm.user"
+                        v-model="selectForm.search"
                         placeholder="关键词"
                     ></el-input>
                 </el-form-item>
-                <el-form-item label="登记时间">
+                <el-form-item label="入住时间">
                     <el-date-picker
-                        v-model="selectForm.user"
+                        v-model="selectForm.timeValue"
                         type="daterange"
                         range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
+                        start-placeholder="合同开始日"
+                        end-placeholder="合同结束日"
+                        value-format="yyyy/MM/dd"
                     >
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item style="float:right">
-                    <el-button type="primary">查询<i class="icon-x-sousuo el-icon--right"></i></el-button>
+                    <el-button
+                        type="primary"
+                        @click="$refs.page.getList(1)"
+                    >查询<i class="icon-x-sousuo el-icon--right"></i></el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -117,7 +69,7 @@
                             type="primary"
                             plain
                             size="mini"
-                            @click="dialogVisible=true"
+                            @click="openAddDialog()"
                         >新增车辆</el-button>
                         <el-button
                             type="primary"
@@ -138,6 +90,7 @@
                             type="danger"
                             plain
                             size="mini"
+                            @click="del(deleteList)"
                         >批量删除</el-button>
                     </template>
                 </div>
@@ -169,56 +122,56 @@
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
+                        prop="plateNumbers"
                         label="车牌号"
                         align="center"
                         min-width="100"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
+                        prop="userName"
                         label="驾驶人姓名"
                         align="center"
                         min-width="100"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
+                        prop="identityTypeName"
                         label="身份类型"
                         align="center"
                         min-width="100"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
+                        prop="areaName"
                         label="所属片区"
                         align="center"
                         min-width="100"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
+                        prop="buildingName"
                         label="所属楼栋"
                         align="center"
                         min-width="100"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
+                        prop="elementName"
                         label="所属单元"
                         align="center"
                         min-width="100"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
+                        prop="roomName"
                         label="所属房屋"
                         align="center"
                         min-width="100"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
+                        prop="createtime"
                         label="登记时间"
                         align="center"
                         min-width="100"
@@ -231,13 +184,19 @@
                         fixed="right"
                     >
                         <template slot-scope="scope">
-                            <el-button type="primary">查看</el-button>
+                            <el-button
+                                type="primary"
+                                @click="openDetailDialog(scope.row)"
+                            >查看</el-button>
                             <span class="com-page-header-title line"></span>
-                            <el-button type="primary">编辑</el-button>
+                            <el-button
+                                type="primary"
+                                @click="openUpdateDialog(scope.row)"
+                            >编辑</el-button>
                             <span class="com-page-header-title line"></span>
                             <el-button
                                 type="danger"
-                                @click="del(scope.row)"
+                                @click="del(scope.row.id)"
                             >删除</el-button>
                         </template>
                     </el-table-column>
@@ -249,96 +208,149 @@
                 />
             </div>
         </div>
-        <el-dialog
-            title="新增车辆"
-            :visible.sync="dialogVisible"
-            width="800px"
-            :modal-append-to-body='false'
-            center
-        >
-            <div>
-                1111
-            </div>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="dialogVisible = false"
-                >保 存</el-button>
-                <el-button @click="dialogVisible = false">取 消</el-button>
-            </div>
-        </el-dialog>
+        <addDialog ref="addDialog" />
+        <detailDialog ref="detailDialog" />
+        <updateDialog ref="updateDialog" />
+
     </div>
 </template>
 
 <script>
 import ctrlPage from "@/components/common/other/CtrlPage";
+import imgUpload from "@/components/common/upload/imgUpload.vue";
+import Dictionary from "@/components/common/select/Dictionary";
+import areaId from "@/components/property/selectForm/areaId";
+import buildingId from "@/components/property/selectForm/buildingId";
+import elementId from "@/components/property/selectForm/elementId";
+import roomId from "@/components/property/selectForm/roomId";
+
+import addDialog from "@/components/property/parkingManagement/car/addDialog";
+import detailDialog from "@/components/property/parkingManagement/car/detailDialog";
+import updateDialog from "@/components/property/parkingManagement/car/updateDialog";
 
 export default {
     name: "property-parkingManagement-car",
     data() {
         return {
             selectForm: {
-                user: ""
+                areaId: null,
+                buildingId: null,
+                elementId: null,
+                roomId: null,
+                identityType: null,
+                search: null,
+                startTime: null,
+                endTime: null,
+                timeValue: null
             },
             list: [],
-            form: {
-                num: "",
-                name: ""
-            },
-            rules: {
-                num: [
-                    {
-                        type: "date",
-                        required: true,
-                        message: "请输入部门编码",
-                        trigger: "blur"
-                    }
-                ],
-                name: [
-                    {
-                        type: "date",
-                        required: true,
-                        message: "请输入部门简称",
-                        trigger: "blur"
-                    }
-                ]
-            },
-            dialogVisible: false,
+            deleteList: []
         };
     },
     mounted() {
         this.$refs.page.getList(1);
     },
     methods: {
+        //多选框
         handleSelectionChange(val) {
-            this.multipleSelection = val;
-        },
-        getList(pageIndex, rows, callback) {
-            if (!this.list.length) {
-                for (let i = 1; i <= 11; i++) {
-                    this.list.push({
-                        num: "c" + i,
-                        name: "c" + i
-                    });
-                }
+            this.deleteList = [];
+            for (let i in val) {
+                this.deleteList.push(val[i].id);
             }
-            callback(this.list, 12);
         },
-        del() {
+        //打开新增窗口
+        openAddDialog() {
+            this.$refs.addDialog.showDialog();
+        },
+        //打开编辑窗口
+        openUpdateDialog(row) {
+            this.$refs.updateDialog.showDialog(row);
+        },
+        //打开查看窗口
+        openDetailDialog(row) {
+            this.$refs.detailDialog.showDialog(row);
+        },
+        //查询/获取List
+        getList(pageIndex, rows, callback) {
+            this.$propertyApi.parkingManagement.car
+                .list({
+                    pageNum: pageIndex,
+                    pageSize: rows,
+                    areaId: this.selectForm.areaId,
+                    buildingId: this.selectForm.buildingId,
+                    elementId: this.selectForm.elementId,
+                    roomId: this.selectForm.roomId,
+                    identityType: this.selectForm.identityType,
+                    search: this.selectForm.search,
+                    startTime: this.selectForm.startTime,
+                    endTime: this.selectForm.endTime
+                })
+                .then(res => {
+                    if (res.code == 1000) {
+                        this.list = res.data.list;
+                        callback(this.list, res.data.total);
+                    } else {
+                        this.$$alert({
+                            message: res.msg,
+                            type: "error"
+                        });
+                    }
+                });
+        },
+        //删除操作
+        del(id) {
+            if (id.length == 0) {
+                this.$$message({
+                    message: "请选择批量删除对象",
+                    type: "warning"
+                });
+                return;
+            }
             this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
                 type: "warning"
             })
                 .then(() => {
-                    this.$message({
-                        type: "success",
-                        message: "删除成功!"
-                    });
+                    if (Array.isArray(id)) {
+                        this.$propertyApi.parkingManagement.car
+                            .deleteList({
+                                ids: id
+                            })
+                            .then(res => {
+                                if (res.code == 1000) {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "success"
+                                    });
+                                    this.$refs.page.getList(1);
+                                } else {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "error"
+                                    });
+                                }
+                            });
+                    } else {
+                        this.$propertyApi.parkingManagement.car
+                            .delete({
+                                id: id
+                            })
+                            .then(res => {
+                                if (res.code == 1000) {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "success"
+                                    });
+                                    this.$refs.page.getList(1);
+                                } else {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "error"
+                                    });
+                                }
+                            });
+                    }
                 })
                 .catch(() => {
                     this.$message({
@@ -349,7 +361,16 @@ export default {
         }
     },
     components: {
-        ctrlPage
+        ctrlPage,
+        imgUpload,
+        Dictionary,
+        areaId,
+        buildingId,
+        elementId,
+        roomId,
+        addDialog,
+        detailDialog,
+        updateDialog
     }
 };
 </script>

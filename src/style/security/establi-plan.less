@@ -1,0 +1,99 @@
+.plan-establi {
+    display: flex;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 129px;
+    bottom: 0;
+    .left-bar {
+        width: 360px;
+        margin-right: 24px;
+        background: #fff;
+        box-shadow: 0px 2px 6px 0px rgba(247,150,35,0.16);
+        overflow: auto;
+        .plan-list {
+            dl {
+                padding: 15px 25px;
+                &.selected {
+                    background:rgba(248,248,248,1);
+                }
+                &:not(.selected) dt .name {
+                    color: #333;
+                }
+            }
+            dt {
+                display: flex;
+                justify-content: space-between;
+                .name {
+                    font-size: 16px;
+                }
+            }
+
+            dd {
+                .item {
+                    margin: 15px 0 5px;
+                    span {
+                        display: inline-block;
+                        margin: 0 10px 10px 0;
+                        white-space: nowrap;
+                        padding: 3px 5px;
+                        font-size: 14px;
+                        color: #999;
+                        background:rgba(255,255,255,1);
+                        border:1px solid rgba(232,232,232,1);
+                        border-radius:2px;
+                    }
+                }
+                .update-time {
+                    font-size: 12px;
+                    color: #999;
+                    i {
+                        font-size: 12px;
+                        margin-right: 5px;
+                    }
+                }
+            }
+        }
+    }
+    .search-container {
+        width: 360px;
+        box-sizing: border-box;
+        padding: 18px 20px;
+        // margin-bottom: 22px;
+        display: flex;
+        // border-bottom: 1px solid #EEEEEE;
+        justify-content: space-between;
+        h4 {
+            font-size: 16px;
+            line-height: 30px;
+        }
+        .el-input {
+            margin-right: 9px;
+        }
+    }
+    .right-bar {
+        position: relative;
+        width: calc(100% - 384px);
+        overflow: auto;
+        &>.inner {
+            padding-right: 24px;
+        }
+        .plan-title {
+            margin-top: 20px;
+            font-size:18px;
+        }
+        .tab-button {
+            margin: 12px 0 7px;
+            .el-button--info {
+                background: #fff;
+                color: #999;
+                border-color: transparent;
+            }
+        }
+        .plan-config-list {
+            padding: 20px;
+            background:rgba(255,255,255,1);
+            border: 1px solid rgba(232,232,232,1);
+        }
+    }
+}

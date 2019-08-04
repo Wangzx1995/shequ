@@ -104,120 +104,20 @@
                 />
             </div>
         </div>
-        <el-dialog
-            title="新增职务"
-            :visible.sync="dialogVisible.add"
-            width="400px"
-            :modal-append-to-body='false'
-            center
-        >
-            <el-form
-                :model="addForm"
-                :rules="rules"
-                ref="addForm"
-                label-width="100px"
-                class="demo-ruleForm dialog-form"
-                label-position="left"
-            >
-                <el-row>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="职务编码"
-                            prop="dutyCode"
-                        >
-                            <el-input v-model.number="addForm.dutyCode"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="职务名称"
-                            prop="dutyName"
-                        >
-                            <el-input v-model="addForm.dutyName"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="排序"
-                            prop="sort"
-                        >
-                            <el-input v-model="addForm.sort"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="add()"
-                >保 存</el-button>
-                <el-button @click="dialogVisible.add = false">取 消</el-button>
-            </div>
-        </el-dialog>
-        <el-dialog
-            title="编辑职务"
-            :visible.sync="dialogVisible.update"
-            width="400px"
-            :modal-append-to-body='false'
-            center
-        >
-            <el-form
-                :model="updateForm"
-                :rules="rules"
-                ref="updateForm"
-                label-width="100px"
-                class="demo-ruleForm dialog-form"
-                label-position="left"
-            >
-                <el-row>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="职务编码"
-                            prop="dutyCode"
-                        >
-                            <el-input v-model="updateForm.dutyCode"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="职务名称"
-                            prop="dutyName"
-                        >
-                            <el-input v-model="updateForm.dutyName"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="排序"
-                            prop="sort"
-                        >
-                            <el-input v-model="updateForm.sort"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="update()"
-                >保 存</el-button>
-                <el-button @click="dialogVisible.update = false">取 消</el-button>
-            </div>
-        </el-dialog>
+
+        <addDialog ref="addDialog" />
+
+        <updateDialog
+            :updateForm="updateForm"
+            ref="updateDialog"
+        />
     </div>
 </template>
 
 <script>
 import ctrlPage from "@/components/common/other/CtrlPage";
-
+import addDialog from "@/components/system/estateManage/job/addDialog";
+import updateDialog from "@/components/system/estateManage/job/updateDialog";
 export default {
     name: "system-job",
     data() {
@@ -226,32 +126,7 @@ export default {
                 search: ""
             },
             list: [],
-            addForm: {
-                dutyCode: '',
-                dutyName: '',
-                sort: ''
-            },
             updateForm: {},
-            rules: {
-                dutyCode: [
-                    {
-                        required: true,
-                        trigger: "blur",
-                        message: "请输入职务编码"
-                    },
-                ],
-                dutyName: [
-                    {
-                        required: true,
-                        message: "请输入职务名称",
-                        trigger: "blur"
-                    }
-                ]
-            },
-            dialogVisible: {
-                add: false,
-                update: false
-            },
             deleteList: []
         };
     },
@@ -265,6 +140,15 @@ export default {
             for (let i in val) {
                 this.deleteList.push(val[i].id)
             }
+        },
+        //打开编辑窗口
+        openUpdateDialog(form) {
+            this.updateForm = form;
+            this.$refs.updateDialog.showDialog();
+        },
+        //打开新增窗口
+        openAddDialog() {
+            this.$refs.addDialog.showDialog();
         },
         //查询/获取List
         getList(pageIndex, rows, callback) {
@@ -324,67 +208,11 @@ export default {
                     });
                 });
         },
-        //新增操作
-        add() {
-            this.$refs.addForm.validate(valid => {
-                if (valid) {
-                    this.$systemApi.estateManage.dutyCreate(this.addForm)
-                        .then(res => {
-                            if (res.code == 1000) {
-                                this.dialogVisible.add = false
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'success'
-                                })
-                                this.$refs.page.getList(1);
-                            } else {
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'error'
-                                })
-                            }
-                        })
-                }
-            });
-        },
-        //打开编辑窗口
-        openUpdateDialog(form) {
-            this.updateForm = form;
-            this.dialogVisible.update = true
-        },
-        //打开新增窗口
-        openAddDialog() {
-            this.dialogVisible.add = true
-            this.$nextTick(() => {
-                this.$refs['addForm'].resetFields();
-            })
-        },
-        //修改操作
-        update() {
-            this.$refs.updateForm.validate(valid => {
-                if (valid) {
-                    this.$systemApi.estateManage.dutyUpdate(this.updateForm)
-                        .then(res => {
-                            if (res.code == 1000) {
-                                this.dialogVisible.update = false
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'success'
-                                })
-                                this.$refs.page.getList(1);
-                            } else {
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'error'
-                                })
-                            }
-                        })
-                }
-            });
-        },
     },
     components: {
-        ctrlPage
+        ctrlPage,
+        addDialog,
+        updateDialog
     }
 };
 </script>

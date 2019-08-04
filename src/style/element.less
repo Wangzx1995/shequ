@@ -1,96 +1,265 @@
-.el-form-item {
-    margin-bottom: 20px;
-}
 div.custom-mini {
     .el-input__inner {
         height: 30px;
         line-height: 30px;
     }
+
     .el-input__suffix {
         top: -5px;
     }
 }
+
 .el-button {
     border-radius: 4px;
+
     * {
         font-size: 16px;
     }
+
     &.custom-mini {
         padding-top: 6px;
         padding-bottom: 6px;
         padding-left: 10px;
         padding-right: 10px;
     }
+
+    &.blue {
+        border-color: #e7f1fd;
+        background-color: #e7f1fd;
+        color: #1779EC;
+
+        &focus,
+        &:hover {
+            border-color: #1779EC;
+        }
+    }
+
+    &.green {
+        border-color: #e7f1fd;
+        background-color: #e7f1fd;
+        color: #21b2c6;
+
+        &focus,
+        &:hover {
+            border-color: #21b2c6;
+        }
+
+    }
 }
+
+.el-form {
+    .full-input {
+        .el-select {
+            width: 100%;
+        }
+    }
+
+    &.label-align-left {
+        .el-form-item__label {
+            text-align: left;
+        }
+    }
+}
+
+.el-form-item {
+    margin-bottom: 20px;
+}
+
 .el-form--inline {
     .el-form-item {
         margin: 10px 30px 10px 0;
+
         &.fr {
             margin-right: 0;
         }
     }
+
     .el-form-item__label {
         padding-right: 19px;
     }
 }
+
 .el-form-item__label {
     font-size: 16px;
     color: #3c3c3c;
 }
-.el-table  {
+
+.el-table {
     &.center {
         .cell {
             text-align: center;
         }
     }
+
     .cell {
         line-height: 40px;
     }
+
     th {
         font-size: 16px;
     }
-    td, th {
+
+    td,
+    th {
         padding: 0;
     }
+
     .cell .el-button span {
         font-size: 14px;
     }
 }
+
 .v-modal {
     opacity: .3;
 }
+
 .el-tree {
+
     // 折叠按钮变成加减图标
     &.count {
-        .el-tree-node__expand-icon{
+        .el-tree-node__expand-icon {
             font-size: 16px;
+
             &:before {
                 font-family: "iconfont" !important;
                 content: '\e66f';
             }
+
             &.expanded {
                 transform: rotate(0);
+
                 &:before {
                     content: '\e66e';
                 }
             }
         }
+
         .el-tree-node__content {
             height: 36px;
+            & >.el-checkbox {
+                margin-right: 8px;
+            }
         }
     }
+
     .custom-between-node {
         display: flex;
         flex: 1;
         justify-content: space-between;
+        overflow: hidden;
+
         i.on {
             color: #f6c02e;
         }
+
         i.off {
             color: #a1a4a8;
         }
+
         .color {
             color: #F79623;
         }
+    }
+}
+
+.el-dialog__wrapper {
+    &.full-footer {
+        .el-dialog__footer {
+            padding: 0;
+            border-top: 1px solid #E7EAED;
+            background: rgb(248, 248, 248);
+
+            a,
+            button {
+                display: inline-block;
+                width: 50%;
+                height: 50px;
+                line-height: 50px;
+                box-sizing: border-box;
+                font-size: 16px;
+                padding: 0;
+
+                &.off {
+                    color: #333;
+
+                    &:hover {
+                        color: #999;
+                    }
+                }
+
+                &:last-of-type {
+                    border-left: 1px solid #E7EAED;
+                }
+            }
+        }
+    }
+
+    &.no-padding {
+        .el-dialog__body {
+            padding: 0;
+        }
+    }
+}
+
+._el-tag-group {
+    .el-tag {
+        margin: 0 10px 10px 0;
+
+        &:last-of-type {
+            margin-right: 0;
+        }
+
+        .el-bottom {
+            margin-bottom: 10px;
+        }
+    }
+}
+
+.el-tag {
+
+    &.green {
+        border-color: #e7f1fd;
+        background-color: #e7f1fd;
+        color: #21b2c6;
+
+        &focus,
+        &:hover {
+            border-color: #21b2c6;
+        }
+
+        .el-tag__close {
+            color: #21b2c6;
+
+            &:hover {
+                color: #fff;
+                background-color: #21b2c6;
+            }
+        }
+    }
+
+    &.blue {
+        border-color: #e7f1fd;
+        background-color: #e7f1fd;
+        color: #1779EC;
+
+        &focus,
+        &:hover {
+            border-color: #1779EC;
+        }
+
+        .el-tag__close {
+            color: #1779EC;
+
+            &:hover {
+                color: #fff;
+                background-color: #1779EC;
+            }
+        }
+    }
+}
+
+.el-transfer {
+    .el-transfer-panel__item {
+        display: block;
     }
 }

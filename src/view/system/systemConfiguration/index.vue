@@ -110,213 +110,19 @@
                 />
             </div>
         </div>
-        <el-dialog
-            title="新增系统配置"
-            :visible.sync="dialogVisible.add"
-            width="800px"
-            :modal-append-to-body='false'
-            center
-        >
-            <el-form
-                :model="addForm"
-                :rules="rules"
-                ref="addForm"
-                label-width="100px"
-                class="demo-ruleForm dialog-form"
-                label-position="left"
-            >
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="配置项"
-                            prop="cfgItem"
-                        >
-                            <el-input v-model="addForm.cfgItem"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="配置类型"
-                            prop="cfgType"
-                        >
-                            <el-input v-model="addForm.cfgType"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="配置项名"
-                            prop="cfgItemName"
-                        >
-                            <el-input v-model="addForm.cfgItemName"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="配置选项"
-                            prop="cfgOption"
-                        >
-                            <el-input v-model="addForm.cfgOption"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="配置值"
-                            prop="cfgValues"
-                        >
-                            <el-input v-model="addForm.cfgValues"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="默认值"
-                            prop="cfgDefault"
-                        >
-                            <el-input v-model="addForm.cfgDefault"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="22">
-                        <el-form-item label="备注">
-                            <el-input
-                                type="textarea"
-                                v-model="addForm.cfgRemark"
-                            ></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="add()"
-                >保 存</el-button>
-                <el-button @click="dialogVisible.add = false">取 消</el-button>
-            </div>
-        </el-dialog>
-        <el-dialog
-            title="编辑职务"
-            :visible.sync="dialogVisible.update"
-            width="800px"
-            :modal-append-to-body='false'
-            center
-        >
-            <el-form
-                :model="updateForm"
-                :rules="rules"
-                ref="updateForm"
-                label-width="100px"
-                class="demo-ruleForm dialog-form"
-                label-position="left"
-            >
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="配置项"
-                            prop="cfgItem"
-                        >
-                            <el-input v-model="updateForm.cfgItem"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="配置类型"
-                            prop="cfgType"
-                        >
-                            <el-input v-model="updateForm.cfgType"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="配置项名"
-                            prop="cfgItemName"
-                        >
-                            <el-input v-model="updateForm.cfgItemName"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="配置选项"
-                            prop="cfgOption"
-                        >
-                            <el-input v-model="updateForm.cfgOption"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="配置值"
-                            prop="cfgValues"
-                        >
-                            <el-input v-model="updateForm.cfgValues"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="默认值"
-                            prop="cfgDefault"
-                        >
-                            <el-input v-model="updateForm.cfgDefault"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="22">
-                        <el-form-item label="备注">
-                            <el-input
-                                type="textarea"
-                                v-model="updateForm.cfgRemark"
-                            ></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="update()"
-                >保 存</el-button>
-                <el-button @click="dialogVisible.update = false">取 消</el-button>
-            </div>
-        </el-dialog>
+
+        <addDialog ref="addDialog" />
+        <updateDialog
+            ref="updateDialog"
+            :updateForm="updateForm"
+        />
     </div>
 </template>
 
 <script>
 import ctrlPage from "@/components/common/other/CtrlPage";
+import addDialog from "@/components/system/systemConfiguration/addDialog";
+import updateDialog from "@/components/system/systemConfiguration/updateDialog";
 
 export default {
     name: "system-configure",
@@ -326,46 +132,7 @@ export default {
                 user: ""
             },
             list: [],
-            addForm: {
-                cfgDefault: '',
-                cfgItem: '',
-                cfgItemName: '',
-                cfgOption: '',
-                cfgRemark: '',
-                cfgType: '',
-                cfgValues: '',
-            },
             updateForm: {},
-            rules: {
-                cfgItem: [
-                    {
-                        required: true,
-                        message: "请输入配置项",
-                        trigger: "blur"
-                    }
-                ],
-                cfgType: [
-                    {
-                        required: true,
-                        message: "请输入配置类型",
-                        trigger: "blur"
-                    }
-                ],
-                cfgItemName: [
-                    {
-                        required: true,
-                        message: "请输入配置项名",
-                        trigger: "blur"
-                    }
-                ],
-                cfgValues: [
-                    {
-                        required: true,
-                        message: "请输入配置值",
-                        trigger: "blur"
-                    }
-                ]
-            },
             dialogVisible: {
                 add: false,
                 update: false
@@ -387,14 +154,11 @@ export default {
         //打开编辑窗口
         openUpdateDialog(form) {
             this.updateForm = form;
-            this.dialogVisible.update = true
+            this.$refs.updateDialog.showDialog();
         },
         //打开新增窗口
         openAddDialog() {
-            this.dialogVisible.add = true
-            // this.$nextTick(() => {
-            //     this.$refs['addForm'].resetFields();
-            // })
+            this.$refs.addDialog.showDialog();
         },
         //查询/获取List
         getList(pageIndex, rows, callback) {
@@ -454,55 +218,11 @@ export default {
                     });
                 });
         },
-        //新增操作
-        add() {
-            this.$refs.addForm.validate(valid => {
-                if (valid) {
-                    this.$systemApi.systemConfiguration.cfgCreate(this.addForm)
-                        .then(res => {
-                            if (res.code == 1000) {
-                                this.dialogVisible.add = false
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'success'
-                                })
-                                this.$refs.page.getList(1);
-                            } else {
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'error'
-                                })
-                            }
-                        })
-                }
-            });
-        },
-        //修改操作
-        update() {
-            this.$refs.updateForm.validate(valid => {
-                if (valid) {
-                    this.$systemApi.systemConfiguration.cfgUpdate(this.updateForm)
-                        .then(res => {
-                            if (res.code == 1000) {
-                                this.dialogVisible.update = false
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'success'
-                                })
-                                this.$refs.page.getList(1);
-                            } else {
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'error'
-                                })
-                            }
-                        })
-                }
-            });
-        },
     },
     components: {
-        ctrlPage
+        ctrlPage,
+        addDialog,
+        updateDialog
     }
 };
 </script>

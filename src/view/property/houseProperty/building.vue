@@ -22,18 +22,11 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="产权性质">
-                    <el-select
-                        clearable
+                    <Dictionary
+                        :typeCode="1004"
                         v-model="selectForm.nature"
-                        placeholder="请选择产权性质"
-                    >
-                        <el-option
-                            v-for="item in natureList"
-                            :key="item.value"
-                            :label="item.dicName"
-                            :value="item.dicCode"
-                        ></el-option>
-                    </el-select>
+                        ref="natureList"
+                    />
                 </el-form-item>
                 <el-form-item label="有无电梯">
                     <el-select
@@ -42,12 +35,10 @@
                         placeholder="请选择片区"
                     >
                         <el-option
-                            label="有"
-                            value="1"
-                        ></el-option>
-                        <el-option
-                            label="无"
-                            value="2"
+                            v-for="item in elevatorList"
+                            :key="item.value"
+                            :label="item.dicName"
+                            :value="item.dicCode"
                         ></el-option>
                     </el-select>
                 </el-form-item>
@@ -157,7 +148,7 @@
                         align="center"
                     >
                         <template slot-scope="scope">
-                            <span>{{getItemName(scope.row.nature,natureList, 'dicCode', 'dicName')}}</span>
+                            <span>{{getItemName(scope.row.nature, $refs.natureList.list, 'dicCode', 'dicName')}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -190,328 +181,26 @@
                 />
             </div>
         </div>
-        <el-dialog
-            title="新增楼栋"
-            :visible.sync="dialogVisible.add"
-            width="800px"
-            :modal-append-to-body='false'
-            center
-        >
-            <el-form
-                :model="addForm"
-                :rules="rules"
-                ref="addForm"
-                label-width="100px"
-                class="demo-ruleForm dialog-form"
-                label-position="left"
-            >
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="楼栋编号"
-                            prop="code"
-                        >
-                            <el-input v-model="addForm.code"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="有无电梯"
-                            prop="elevator"
-                        >
-                            <el-select
-                                clearable
-                                v-model="addForm.elevator"
-                                placeholder="请选择有无电梯"
-                            >
-                                <el-option
-                                    label="有"
-                                    value="1"
-                                ></el-option>
-                                <el-option
-                                    label="无"
-                                    value="2"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="楼栋名称"
-                            prop="name"
-                        >
-                            <el-input v-model="addForm.name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="建筑年代"
-                            prop="buildingAge"
-                        >
-                            <el-input v-model="addForm.buildingAge"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="所属片区"
-                            prop="areaId"
-                        >
-                            <el-select
-                                clearable
-                                v-model="addForm.areaId"
-                                placeholder="请选择所属片区"
-                            >
-                                <el-option
-                                    v-for="item in areaList"
-                                    :key="item.value"
-                                    :label="item.areaName"
-                                    :value="item.areaId"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="产权性质"
-                            prop="nature"
-                        >
-                            <el-select
-                                clearable
-                                v-model="addForm.nature"
-                                placeholder="请选择产权性质"
-                            >
-                                <el-option
-                                    v-for="item in natureList"
-                                    :key="item.value"
-                                    :label="item.dicName"
-                                    :value="item.dicCode"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="add()"
-                >保 存</el-button>
-                <el-button @click="dialogVisible.add = false">取 消</el-button>
-            </div>
-        </el-dialog>
-        <el-dialog
-            title="编辑楼栋"
-            :visible.sync="dialogVisible.update"
-            width="800px"
-            :modal-append-to-body='false'
-            center
-        >
-            <el-form
-                :model="updateForm"
-                :rules="rules"
-                ref="updateForm"
-                label-width="100px"
-                class="demo-ruleForm dialog-form"
-                label-position="left"
-            >
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="楼栋编号"
-                            prop="code"
-                        >
-                            <el-input
-                                v-model="updateForm.code"
-                                disabled=""
-                            ></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="有无电梯"
-                            prop="elevator"
-                        >
-                            <el-select
-                                clearable
-                                v-model="updateForm.elevator"
-                                placeholder="请选择有无电梯"
-                            >
-                                <el-option
-                                    label="有"
-                                    value="1"
-                                ></el-option>
-                                <el-option
-                                    label="无"
-                                    value="2"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="楼栋名称"
-                            prop="name"
-                        >
-                            <el-input v-model="updateForm.name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="建筑年代"
-                            prop="buildingAge"
-                        >
-                            <el-input v-model="updateForm.buildingAge"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="所属片区"
-                            prop="areaId"
-                        >
-                            <el-select
-                                clearable
-                                v-model="updateForm.areaId"
-                                placeholder="请选择所属片区"
-                            >
-                                <el-option
-                                    v-for="item in areaList"
-                                    :key="item.value"
-                                    :label="item.areaName"
-                                    :value="item.areaId"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="产权性质"
-                            prop="nature"
-                        >
-                            <el-select
-                                clearable
-                                v-model="updateForm.nature"
-                                placeholder="请选择产权性质"
-                            >
-                                <el-option
-                                    v-for="item in natureList"
-                                    :key="item.value"
-                                    :label="item.dicName"
-                                    :value="item.dicCode"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="update()"
-                >保 存</el-button>
-                <el-button @click="dialogVisible.update = false">取 消</el-button>
-            </div>
-        </el-dialog>
-        <el-dialog
-            title="查看详情"
-            :visible.sync="dialogVisible.detail"
-            width="800px"
-            :modal-append-to-body='false'
-            center
-            class="updateDialog"
-        >
-            <el-row>
-                <el-col :span="3">
-                    <span>楼栋编号</span>
-                </el-col>
-                <el-col :span="8">
-                    <span>{{detailForm.code}}</span>
-                </el-col>
-                <el-col
-                    :span="3"
-                    :offset="1"
-                >
-                    <span>有无电梯</span>
-                </el-col>
-                <el-col :span="8">
-                    <span v-if="detailForm.elevator==1">有</span>
-                    <span v-if="detailForm.elevator==2">无</span>
-                </el-col>
-            </el-row>
-            <el-row>
-                <el-col :span="3">
-                    <span>楼栋名称</span>
-                </el-col>
-                <el-col :span="8">
-                    <span>{{detailForm.name}}</span>
-                </el-col>
-                <el-col
-                    :span="3"
-                    :offset="1"
-                >
-                    <span>建筑年代</span>
-                </el-col>
-                <el-col :span="8">
-                    <span>{{detailForm.buildingAge}}</span>
-                </el-col>
-            </el-row>
-            <el-row>
-                <el-col :span="3">
-                    <span>所属片区</span>
-                </el-col>
-                <el-col :span="8">
-                    <span>{{detailForm.areaId}}</span>
-                </el-col>
-                <el-col
-                    :span="3"
-                    :offset="1"
-                >
-                    <span>产权性质</span>
-                </el-col>
-                <el-col :span="8">
-                    <span>{{getItemName(detailForm.nature,natureList, 'dicCode', 'dicName')}}</span>
-                </el-col>
-            </el-row>
-        </el-dialog>
+        <addDialog
+            ref="addDialog"
+            :areaList="areaList"
+        />
+        <updateDialog
+            ref="updateDialog"
+            :areaList="areaList"
+        />
+        <detailDialog ref="detailDialog" />
     </div>
 </template>
 
 <script>
 import ctrlPage from "@/components/common/other/CtrlPage";
 import { getItemName } from "@/filters/index.js";
+import Dictionary from '@/components/common/select/Dictionary'
+import addDialog from "@/components/property/houseProperty/building/addDialog";
+import updateDialog from "@/components/property/houseProperty/building/updateDialog";
+import detailDialog from "@/components/property/houseProperty/building/detailDialog";
+
 
 export default {
     name: "property-houseProperty-building",
@@ -526,44 +215,22 @@ export default {
             list: [],
             areaList: [],
             natureList: [],
-            addForm: {
-                areaId: null,
-                buildingAge: null,
-                code: '',
-                elevator: null,
-                name: '',
-                nature: ''
-            },
-            updateForm: {},
-            detailForm: {},
-            rules: {
-                code: [
-                    {
-                        required: true,
-                        message: "请输入楼栋编号",
-                        trigger: "blur"
-                    }
-                ],
-                name: [
-                    {
-                        required: true,
-                        message: "请输入楼栋名称",
-                        trigger: "blur"
-                    }
-                ]
-            },
-            dialogVisible: {
-                add: false,
-                update: false,
-                detail: false
-            },
+            elevatorList: [
+                {
+                    dicCode: 1,
+                    dicName: '有'
+                }, {
+                    dicCode: 2,
+                    dicName: '无'
+                }
+            ],
             deleteList: []
         };
     },
     mounted() {
         this.getSearchList()
-        this.getNatureList()
         this.$refs.page.getList(1);
+        this.natureList = this.$refs.natureList.list
     },
     methods: {
         getItemName,
@@ -576,36 +243,21 @@ export default {
         },
         //打开新增窗口
         openAddDialog() {
-            this.dialogVisible.add = true
-            this.$nextTick(() => {
-                this.$refs['addForm'].resetFields();
-            })
+            this.$refs.addDialog.showDialog(this.$refs.natureList.list);
         },
         //打开编辑窗口
-        openUpdateDialog(form) {
-            this.updateForm = form;
-            this.dialogVisible.update = true
+        openUpdateDialog(row) {
+            this.$refs.updateDialog.showDialog(row, this.$refs.natureList.list);
         },
         //打开查看窗口
-        openDetailDialog(form) {
-            this.detailForm = form;
-            this.dialogVisible.detail = true
+        openDetailDialog(row) {
+            this.$refs.detailDialog.showDialog(row, this.$refs.natureList.list);
         },
         //获取片区列表
         getSearchList() {
             this.$propertyApi.personManagement.household.cascade().then((res) => {
                 if (res.code == 1000) {
                     this.areaList = res.data
-                }
-            })
-        },
-        //获取产权性质
-        getNatureList() {
-            this.$systemApi.dataDictionary.typeToDic({
-                typeCode: 1004
-            }).then((res) => {
-                if (res.code == 1000) {
-                    this.natureList = res.data
                 }
             })
         },
@@ -629,29 +281,6 @@ export default {
                     })
                 }
             })
-        },
-        //新增操作
-        add() {
-            this.$refs.addForm.validate(valid => {
-                if (valid) {
-                    this.$propertyApi.houseProperty.building.add(this.addForm)
-                        .then(res => {
-                            if (res.code == 1000) {
-                                this.dialogVisible.add = false
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'success'
-                                })
-                                this.$refs.page.getList(1);
-                            } else {
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'error'
-                                })
-                            }
-                        })
-                }
-            });
         },
         //删除操作
         del(id) {
@@ -713,32 +342,13 @@ export default {
                     });
                 });
         },
-        //修改操作
-        update() {
-            this.$refs.updateForm.validate(valid => {
-                if (valid) {
-                    this.$propertyApi.houseProperty.building.update(this.updateForm)
-                        .then(res => {
-                            if (res.code == 1000) {
-                                this.dialogVisible.update = false
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'success'
-                                })
-                                this.$refs.page.getList(1);
-                            } else {
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'error'
-                                })
-                            }
-                        })
-                }
-            });
-        },
     },
     components: {
-        ctrlPage
+        ctrlPage,
+        addDialog,
+        updateDialog,
+        detailDialog,
+        Dictionary
     }
 };
 </script>

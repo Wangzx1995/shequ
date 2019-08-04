@@ -6,80 +6,55 @@
                 :model="selectForm"
                 class="demo-form-inline"
                 label-position="left"
+                ref="selectForm"
             >
                 <el-form-item label="所属片区">
-                    <el-select
-                        clearable
-                        v-model="selectForm.areaId"
-                        placeholder="请选择片区"
-                    >
-                        <el-option
-                            v-for="item in areaList"
-                            :key="item.value"
-                            :label="item.areaName"
-                            :value="item.areaId"
-                        ></el-option>
-                    </el-select>
+                    <areaId v-model="selectForm.areaId" />
                 </el-form-item>
                 <el-form-item label="所属楼栋">
-                    <el-select
-                        clearable
+                    <buildingId
+                        :areaId="selectForm.areaId"
                         v-model="selectForm.buildingId"
-                        placeholder="请选择楼栋"
-                    >
-                        <el-option
-                            v-for="item in buildingList"
-                            :key="item.value"
-                            :label="item.buildingName"
-                            :value="item.buildingId"
-                        ></el-option>
-                    </el-select>
+                    />
                 </el-form-item>
                 <el-form-item label="所属单元">
-                    <el-select
-                        clearable
+                    <elementId
+                        :buildingId="selectForm.buildingId"
                         v-model="selectForm.elementId"
-                        placeholder="请选择单元"
-                    >
-                        <el-option
-                            v-for="item in elementList"
-                            :key="item.value"
-                            :label="item.elementName"
-                            :value="item.elementId"
-                        ></el-option>
-                    </el-select>
+                    />
                 </el-form-item>
                 <el-form-item label="所属房屋">
-                    <el-select
-                        clearable
+                    <roomId
+                        :elementId="selectForm.elementId"
                         v-model="selectForm.roomId"
-                        placeholder="请选择房屋"
-                    >
-                        <el-option
-                            v-for="item in roomList"
-                            :key="item.value"
-                            :label="item.roomValue"
-                            :value="item.roomId"
-                        ></el-option>
-                    </el-select>
+                    />
                 </el-form-item>
                 <el-form-item label="身份类型">
+                    <Dictionary
+                        :typeCode="1007"
+                        v-model="selectForm.identityType"
+                    />
+                </el-form-item>
+                <el-form-item
+                    label="审批状态"
+                    v-if="selectForm.type!='1'"
+                >
                     <el-select
                         clearable
-                        v-model="selectForm.identityType"
-                        placeholder="请选择身份类型"
+                        v-model="selectForm.status"
+                        placeholder="请选择审批状态"
                     >
                         <el-option
-                            v-for="item in identityTypeList"
+                            v-for="item in statusList"
                             :key="item.value"
-                            :label="item.identityTypeValue"
-                            :value="item.identityTypeId"
+                            :label="item.statusValue"
+                            :value="item.statusId"
                         ></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="关键词">
                     <el-input
-                        v-model="selectForm.user"
+                        v-model="selectForm.search"
                         placeholder="关键词"
                     ></el-input>
                 </el-form-item>
@@ -159,7 +134,7 @@
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="userName"
+                        prop="name"
                         label="姓名"
                         align="center"
                     >
@@ -181,10 +156,15 @@
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="identityType"
                         label="身份类型"
                         align="center"
                     >
+                        <template slot-scope="scope">
+                            <DictionaryText
+                                :typeCode="1007"
+                                :dicCode="scope.row.identityType"
+                            />
+                        </template>
                     </el-table-column>
                     <el-table-column
                         prop="areaName"
@@ -205,7 +185,7 @@
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="roomId"
+                        prop="roomName"
                         label="所属房屋"
                         align="center"
                     >
@@ -229,15 +209,72 @@
                     >
                     </el-table-column>
                     <el-table-column
+                        prop="status"
+                        label="审批状态"
+                        align="center"
+                        v-if="selectForm.type!='1'"
+                    >
+                        <template
+                            slot-scope="scope"
+                            v-if="selectForm.type!='1'"
+                        >
+                            <span>{{getItemName(scope.row.status,statusList, 'statusId', 'statusValue')}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        prop="status"
+                        label="APP"
+                        align="center"
+                        v-if="selectForm.type!='1'"
+                    >
+                        <template
+                            slot-scope="scope"
+                            v-if="selectForm.type!='1'"
+                        >
+                            <span>启用</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
                         label="操作"
                         width="100"
                         align="center"
+                        v-if="selectForm.type=='1'"
                     >
                         <template slot-scope="scope">
                             <el-button
                                 type="primary"
-                                @click="dialogVisible=true"
+                                @click="openAuditingDialog(scope.row)"
                             >审批</el-button>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        label="操作"
+                        width="250"
+                        align="center"
+                        v-if="selectForm.type=='2'"
+                    >
+                        <template slot-scope="scope">
+                            <el-button
+                                type="primary"
+                                @click="openDetailDialog(scope.row)"
+                            >查看</el-button>
+                            <span class="com-page-header-title line"></span>
+                            <el-button
+                                type="primary"
+                                @click="openUpdateDialog(scope.row)"
+                            >编辑</el-button>
+                            <span class="com-page-header-title line"></span>
+                            <el-button
+                                type="danger"
+                                @click="del(scope.row.id)"
+                            >删除</el-button>
+                            <span class="com-page-header-title line"></span>
+                            <el-button type="danger">重置</el-button>
+                            <span class="com-page-header-title line"></span>
+                            <el-button
+                                type="primary"
+                                @click="openXuzuDialog(scope.row)"
+                            >续租</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -248,611 +285,34 @@
                 />
             </div>
         </div>
-        <el-dialog
-            title="新增住户"
-            :visible.sync="dialogVisible.add"
-            width="800px"
-            :modal-append-to-body='false'
-            center
-            class="addZhuHu"
-        >
-            <div>
-                <el-tabs
-                    v-model="activeName"
-                    @tab-click="handleClick"
-                >
-                    <el-tab-pane
-                        label="住户信息"
-                        name="first"
-                    >
-                        <div>
-                            <el-form
-                                :model="addForm"
-                                :rules="rules"
-                                ref="addForm"
-                                label-width="110px"
-                                class="demo-ruleForm dialog-form"
-                                label-position="left"
-                            >
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-form-item
-                                            label="姓名"
-                                            prop="name"
-                                        >
-                                            <el-input v-model="addForm.name"></el-input>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col
-                                        :span="11"
-                                        :offset="1"
-                                    >
-                                        <el-form-item
-                                            label="证件类型"
-                                            prop="documentType"
-                                        >
-                                            <el-select
-                                                clearable
-                                                v-model="addForm.documentType"
-                                                placeholder="请选择证件类型"
-                                            >
-                                                <el-option
-                                                    label="1"
-                                                    value="1"
-                                                ></el-option>
-                                            </el-select>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-form-item
-                                            label="性别"
-                                            prop="sex"
-                                        >
-                                            <el-radio-group v-model="addForm.sex">
-                                                <el-radio :label="1">男</el-radio>
-                                                <el-radio :label="2">女</el-radio>
-                                            </el-radio-group>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col
-                                        :span="11"
-                                        :offset="1"
-                                    >
-                                        <el-form-item
-                                            label="证件号码"
-                                            prop="documentNumber"
-                                        >
-                                            <el-input v-model="addForm.documentNumber"></el-input>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-form-item
-                                            label="民族"
-                                            prop="nation"
-                                        >
-                                            <el-select
-                                                clearable
-                                                v-model="addForm.nation"
-                                                placeholder="请选择证件类型"
-                                            >
-                                                <el-option
-                                                    label="1"
-                                                    value="1"
-                                                ></el-option>
-                                            </el-select>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col
-                                        :span="11"
-                                        :offset="1"
-                                    >
-                                        <el-form-item
-                                            label="入住时间"
-                                            prop="checkIn"
-                                        >
-                                            <el-date-picker
-                                                v-model="addForm.checkIn"
-                                                type="date"
-                                                value-format="yyyy/MM/dd"
-                                                placeholder="选择日期"
-                                            >
-                                            </el-date-picker>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-form-item
-                                            label="手机号"
-                                            prop="phone"
-                                        >
-                                            <el-input v-model="addForm.phone"></el-input>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col
-                                        :span="11"
-                                        :offset="1"
-                                    >
-                                        <el-form-item
-                                            label="特殊人群"
-                                            prop="spcialCrowd"
-                                        >
-                                            <el-select
-                                                clearable
-                                                v-model="addForm.spcialCrowd"
-                                                placeholder="请选择特殊人群"
-                                            >
-                                                <el-option
-                                                    label="1"
-                                                    value="1"
-                                                ></el-option>
-                                            </el-select>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-form-item
-                                            label="婚姻状况"
-                                            prop="marriage"
-                                        >
-                                            <el-input v-model="addForm.marriage"></el-input>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col
-                                        :span="11"
-                                        :offset="1"
-                                    >
-                                        <el-form-item
-                                            label="学历"
-                                            prop="education"
-                                        >
-                                            <el-select
-                                                clearable
-                                                v-model="addForm.education"
-                                                placeholder="请选择学历"
-                                            >
-                                                <el-option
-                                                    label="1"
-                                                    value="1"
-                                                ></el-option>
-                                            </el-select>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-form-item
-                                            label="国籍"
-                                            prop="nationality"
-                                        >
-                                            <el-select
-                                                clearable
-                                                v-model="addForm.nationality"
-                                                placeholder="请选择国籍"
-                                            >
-                                                <el-option
-                                                    label="1"
-                                                    value="1"
-                                                ></el-option>
-                                            </el-select>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col
-                                        :span="11"
-                                        :offset="1"
-                                    >
-                                        <el-form-item
-                                            label="政治面貌"
-                                            prop="politicsStatus"
-                                        >
-                                            <el-select
-                                                clearable
-                                                v-model="addForm.politicsStatus"
-                                                placeholder="请选择政治面貌"
-                                            >
-                                                <el-option
-                                                    label="1"
-                                                    value="1"
-                                                ></el-option>
-                                            </el-select>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-form-item
-                                            label="籍贯"
-                                            prop="nativePlace"
-                                        >
-                                            <el-input v-model="addForm.nativePlace"></el-input>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col
-                                        :span="11"
-                                        :offset="1"
-                                    >
-                                        <el-form-item
-                                            label="户籍地址"
-                                            prop="domicileAddress"
-                                        >
-                                            <el-input v-model="addForm.domicileAddress"></el-input>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-form-item
-                                            label="从事职业"
-                                            prop="profession"
-                                        >
-                                            <el-input v-model="addForm.profession"></el-input>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col
-                                        :span="11"
-                                        :offset="1"
-                                    >
-                                        <el-form-item
-                                            label="工作单位"
-                                            prop="workUnit"
-                                        >
-                                            <el-input v-model="addForm.workUnit"></el-input>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-form-item
-                                            label="身份类型"
-                                            prop="identityType"
-                                        >
-                                            <el-select
-                                                clearable
-                                                v-model="addForm.identityType"
-                                                placeholder="请选择身份类型"
-                                            >
-                                                <el-option
-                                                    label="1"
-                                                    value="1"
-                                                ></el-option>
-                                            </el-select>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col
-                                        :span="11"
-                                        :offset="1"
-                                    >
-                                        <el-form-item
-                                            label="是否业主入住"
-                                            prop="ifOwner"
-                                        >
-                                            <el-radio-group v-model="addForm.ifOwner">
-                                                <el-radio :label="1">是</el-radio>
-                                                <el-radio :label="2">否</el-radio>
-                                            </el-radio-group>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="11">
-
-                                        <el-form-item
-                                            label="租房合同"
-                                            prop="accessoryContract"
-                                        >
-                                            <imgUpload
-                                                :imgSetting="upload"
-                                                :getImgUrl="getImgUrl4"
-                                                ref="imgUpload4"
-                                            />
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col
-                                        :span="11"
-                                        :offset="1"
-                                    >
-                                        <el-row>
-                                            <el-col :span="24">
-                                                <el-form-item label="合同开始日">
-                                                    <el-date-picker
-                                                        v-model="addForm.starttime"
-                                                        type="date"
-                                                        placeholder="选择日期"
-                                                    >
-                                                    </el-date-picker>
-                                                </el-form-item>
-                                            </el-col>
-                                        </el-row>
-                                        <el-row>
-                                            <el-col :span="24">
-                                                <el-form-item label="合同结束日">
-                                                    <el-date-picker
-                                                        v-model="addForm.endtime"
-                                                        type="date"
-                                                        placeholder="选择日期"
-                                                    >
-                                                    </el-date-picker>
-                                                </el-form-item>
-                                            </el-col>
-                                        </el-row>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-form-item
-                                            label="证件照片"
-                                            prop="accessoryCard"
-                                        >
-                                            <imgUpload
-                                                :imgSetting="upload"
-                                                :getImgUrl="getImgUrl1"
-                                                ref="imgUpload1"
-                                            />
-                                            <!-- :imgUrls="(addForm.certificateImg[0]&& addForm.certificateImg[0].split(',')) || []" -->
-                                            <imgUpload
-                                                :imgSetting="upload"
-                                                :getImgUrl="getImgUrl2"
-                                                ref="imgUpload2"
-                                            />
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col
-                                        :span="11"
-                                        :offset="1"
-                                    >
-                                        <el-form-item
-                                            label="采集照片"
-                                            prop="accessoryPicture"
-                                        >
-                                            <imgUpload
-                                                :imgSetting="upload"
-                                                :getImgUrl="getImgUrl3"
-                                                ref="imgUpload3"
-                                            />
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-form-item
-                                            label="业主姓名"
-                                            prop="userName"
-                                        >
-                                            <el-input v-model="addForm.userName"></el-input>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col
-                                        :span="11"
-                                        :offset="1"
-                                    >
-                                        <el-form-item
-                                            label="所属片区"
-                                            prop="areaId"
-                                        >
-                                            <el-select
-                                                clearable
-                                                v-model="addForm.areaId"
-                                                placeholder="请选择所属片区"
-                                            >
-                                                <el-option
-                                                    label="1"
-                                                    value="1"
-                                                ></el-option>
-                                            </el-select>
-                                        </el-form-item>
-                                    </el-col>
-
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-form-item
-                                            label="所属楼栋"
-                                            prop="buildingId"
-                                        >
-                                            <el-select
-                                                clearable
-                                                v-model="addForm.buildingId"
-                                                placeholder="请选择所属楼栋"
-                                            >
-                                                <el-option
-                                                    label="1"
-                                                    value="1"
-                                                ></el-option>
-                                            </el-select>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col
-                                        :span="11"
-                                        :offset="1"
-                                    >
-                                        <el-form-item
-                                            label="所属单元"
-                                            prop="elementId"
-                                        >
-                                            <el-select
-                                                clearable
-                                                v-model="addForm.elementId"
-                                                placeholder="请选择所属单元"
-                                            >
-                                                <el-option
-                                                    label="1"
-                                                    value="1"
-                                                ></el-option>
-                                            </el-select>
-                                        </el-form-item>
-                                    </el-col>
-
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-form-item
-                                            label="所属房屋"
-                                            prop="roomId"
-                                        >
-                                            <el-select
-                                                clearable
-                                                v-model="addForm.roomId"
-                                                placeholder="请选择所属房屋"
-                                            >
-                                                <el-option
-                                                    label="1"
-                                                    value="1"
-                                                ></el-option>
-                                            </el-select>
-                                        </el-form-item>
-                                    </el-col>
-
-                                </el-row>
-                            </el-form>
-                        </div>
-                    </el-tab-pane>
-                    <el-tab-pane
-                        label="app权限"
-                        name="second"
-                    >
-                        <div>
-                            <el-form
-                                :model="addForm"
-                                :rules="rules"
-                                ref="addForm"
-                                label-width="110px"
-                                class="demo-ruleForm dialog-form"
-                                label-position="left"
-                            >
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-form-item
-                                            label="用户名"
-                                            prop="areaId"
-                                        >
-                                            <el-input v-model="addForm.code"></el-input>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-form-item
-                                            label="是否开通"
-                                            prop="areaId"
-                                        >
-                                            <el-radio-group v-model="addForm.sex">
-                                                <el-radio :label="1">是</el-radio>
-                                                <el-radio :label="2">否</el-radio>
-                                            </el-radio-group>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-form-item
-                                            label="开通时间"
-                                            prop="certificateImg"
-                                        >
-                                            <el-date-picker
-                                                v-model="addForm.code"
-                                                type="date"
-                                                placeholder="选择日期"
-                                            >
-                                            </el-date-picker>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-divider></el-divider>
-                            </el-form>
-                        </div>
-                    </el-tab-pane>
-                    <el-tab-pane
-                        label="续租"
-                        name="third"
-                    >
-                        <div>
-                            <el-form
-                                :model="addForm"
-                                :rules="rules"
-                                ref="addForm"
-                                label-width="110px"
-                                class="demo-ruleForm dialog-form"
-                                label-position="left"
-                            >
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-form-item
-                                            label="合同开始日"
-                                            prop="areaId"
-                                        >
-                                            <el-date-picker
-                                                v-model="addForm.code"
-                                                type="date"
-                                                placeholder="选择日期"
-                                            >
-                                            </el-date-picker>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-form-item
-                                            label="合同结束日"
-                                            prop="areaId"
-                                        >
-                                            <el-date-picker
-                                                v-model="addForm.code"
-                                                type="date"
-                                                placeholder="选择日期"
-                                            >
-                                            </el-date-picker>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-form-item
-                                            label="租房合同"
-                                            prop="certificateImg"
-                                        >
-                                            <imgUpload
-                                                :imgSetting="upload"
-                                                :getImgUrl="getImgUrl1"
-                                                ref="imgUpload1"
-                                            />
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                            </el-form>
-                        </div>
-                    </el-tab-pane>
-                </el-tabs>
-            </div>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="dialogVisible.add = false"
-                >保 存</el-button>
-                <el-button @click="dialogVisible.add = false">取 消</el-button>
-            </div>
-        </el-dialog>
+        <addDialog ref="addDialog" />
+        <detailDialog ref="detailDialog" />
+        <updateDialog ref="updateDialog" />
+        <xuzuDialog ref="xuzuDialog" />
     </div>
 </template>
 
 <script>
+import { getItemName } from "@/filters/index.js";
 import ctrlPage from "@/components/common/other/CtrlPage";
 import imgUpload from "@/components/common/upload/imgUpload.vue";
+import Dictionary from "@/components/common/select/Dictionary";
+import DictionaryText from "@/components/common/select/DictionaryText";
+import areaId from "@/components/property/selectForm/areaId";
+import buildingId from "@/components/property/selectForm/buildingId";
+import elementId from "@/components/property/selectForm/elementId";
+import roomId from "@/components/property/selectForm/roomId";
+import addDialog from "@/components/property/personManagement/household/addDialog";
+import detailDialog from "@/components/property/personManagement/household/detailDialog";
+import updateDialog from "@/components/property/personManagement/household/updateDialog";
+import xuzuDialog from "@/components/property/personManagement/household/xuzuDialog";
 
 export default {
     name: "property-personManagement-household",
     data() {
         return {
             selectForm: {
-                type: '1',
+                type: "1",
                 areaId: null,
                 buildingId: null,
                 elementId: null,
@@ -865,195 +325,157 @@ export default {
                 timeValue: null
             },
             list: [],
-            roomList: [
+            statusList: [
                 {
-                    roomId: '1',
-                    roomValue: '房屋111'
-                }, {
-                    roomId: '2',
-                    roomValue: '房屋22'
+                    statusId: 1,
+                    statusValue: "通过"
+                },
+                {
+                    statusId: 2,
+                    statusValue: "未通过"
                 }
             ],
-            identityTypeList: [
-                {
-                    identityTypeId: '1',
-                    identityTypeValue: '儿子'
-                }, {
-                    identityTypeId: '2',
-                    identityTypeValue: '爸爸'
-                }
-            ],
-            areaList: [],
-            buildingList: [],
-            elementList: [],
-            addForm: {
-                code: null,
-            },
-            auditingForm: {},
-            detailForm: {},
-            updateForm: {},
-            rules: {
-                num: [
-                    {
-                        required: true,
-                        message: "请输入部门编码",
-                        trigger: "blur"
-                    }
-                ],
-                name: [
-                    {
-                        required: true,
-                        message: "请输入部门简称",
-                        trigger: "blur"
-                    }
-                ]
-            },
-            dialogVisible: {
-                add: false,
-                auditing: false,
-                detail: false,
-                update: false,
-                innerVisible: false,
-            },
-            activeName: 'first',
-            upload: {
-                limit: 1,
-                isShow: true
-            }
+            activeName: "first",
+            deleteList: []
         };
     },
     mounted() {
-        this.getAreaList()
-
         this.$refs.page.getList(1);
     },
     watch: {
-        'selectForm.areaId'() {
-            this.getBuildingList(this.selectForm.areaId)
-        },
-        'selectForm.buildingId'() {
-            this.getElementIdList(this.selectForm.buildingId)
-        },
-        'selectForm.timeValue'() {
+        "selectForm.timeValue"() {
             if (!this.selectForm.timeValue) {
-                this.selectForm.startTime = null
-                this.selectForm.endTime = null
+                this.selectForm.startTime = null;
+                this.selectForm.endTime = null;
             } else {
-                this.selectForm.startTime = this.selectForm.timeValue[0]
-                this.selectForm.endTime = this.selectForm.timeValue[1]
+                this.selectForm.startTime = this.selectForm.timeValue[0];
+                this.selectForm.endTime = this.selectForm.timeValue[1];
             }
         },
-        'addForm.areaId'() {
-            this.getBuildingList(this.addForm.areaId)
-        },
-        'addForm.buildingId'() {
-            this.getElementIdList(this.addForm.buildingId)
-        },
+        "selectForm.type"() {
+            this.$refs.page.getList(1);
+            this.$nextTick(() => {
+                this.$refs.selectForm.resetFields();
+            });
+        }
     },
     methods: {
+        getItemName,
         handleClick(tab, event) {
             console.log(tab, event);
         },
-        test() {
-            console.log(this.selectForm)
-        },
         //多选框
         handleSelectionChange(val) {
-            this.deleteList = []
+            this.deleteList = [];
             for (let i in val) {
-                this.deleteList.push(val[i].id)
+                this.deleteList.push(val[i].id);
             }
         },
         //打开新增窗口
         openAddDialog() {
-            this.dialogVisible.add = true
-            // this.$nextTick(() => {
-            //     this.$refs['addForm'].resetFields();
-            // })
+            this.$refs.addDialog.showDialog();
         },
         //打开编辑窗口
-        openUpdateDialog(form) {
-            this.updateForm = form;
-            this.dialogVisible.update = true;
+        openUpdateDialog(row) {
+            this.$refs.updateDialog.showDialog(row);
         },
         //打开审核窗口
-        openAuditingDialog(form) {
-            this.detailForm = form;
-            this.dialogVisible.detail = true
+        openAuditingDialog(row) {
+            this.$refs.detailDialog.showDialog(row);
+            this.$refs.detailDialog.openEditDialog();
         },
         //打开查看窗口
-        openDetailDialog(form) {
-            this.detailForm = form;
-            this.dialogVisible.detail = true
+        openDetailDialog(row) {
+            this.$refs.detailDialog.showDialog(row);
+            this.$refs.detailDialog.closeEditDialog();
         },
-        //获取片区
-        getAreaList() {
-            this.$propertyApi.personManagement.household.cascade({
-                areaId: this.selectForm.areaId,
-                buildingId: this.selectForm.buildingId,
-                elementId: this.selectForm.elementId,
-            }).then((res) => {
-                if (res.code == 1000) {
-                    this.areaList = res.data
-                }
-            })
-        },
-        //获取楼栋
-        getBuildingList(areaId) {
-            this.$propertyApi.personManagement.household.cascade({
-                areaId: areaId,
-            }).then((res) => {
-                if (res.code == 1000) {
-                    this.buildingList = res.data
-                }
-            })
-        },
-        //获取单元
-        getElementIdList(buildingId) {
-            this.$propertyApi.personManagement.household.cascade({
-                buildingId: buildingId,
-            }).then((res) => {
-                if (res.code == 1000) {
-                    this.elementList = res.data
-                }
-            })
+        //打开续租窗口
+        openXuzuDialog(row) {
+            this.$refs.xuzuDialog.showDialog(row);
         },
         //查询/获取List
         getList(pageIndex, rows, callback) {
-            this.$propertyApi.personManagement.household.list({
-                pageNum: pageIndex,
-                pageSize: rows,
-                areaId: this.selectForm.areaId,
-                buildingId: this.selectForm.buildingId,
-                elementId: this.selectForm.elementId,
-                roomId: this.selectForm.roomId,
-                identityType: this.selectForm.identityType,
-                search: this.selectForm.search,
-                startTime: this.selectForm.startTime,
-                endTime: this.selectForm.endTime,
-            }).then((res) => {
-                if (res.code == 1000) {
-                    this.list = res.data.list
-                    callback(this.list, res.data.total)
-                } else {
-                    this.$$alert({
-                        message: res.msg,
-                        type: 'error'
-                    })
-                }
-            })
+            this.$propertyApi.personManagement.household
+                .list({
+                    pageNum: pageIndex,
+                    pageSize: rows,
+                    areaId: this.selectForm.areaId,
+                    buildingId: this.selectForm.buildingId,
+                    elementId: this.selectForm.elementId,
+                    roomId: this.selectForm.roomId,
+                    identityType: this.selectForm.identityType,
+                    search: this.selectForm.search,
+                    startTime: this.selectForm.startTime,
+                    endTime: this.selectForm.endTime,
+                    type: this.selectForm.type,
+                    status: this.selectForm.status
+                })
+                .then(res => {
+                    if (res.code == 1000) {
+                        this.list = res.data.list;
+                        callback(this.list, res.data.total);
+                    } else {
+                        this.$$alert({
+                            message: res.msg,
+                            type: "error"
+                        });
+                    }
+                });
         },
-        del() {
+        //删除操作
+        del(id) {
+            if (id.length == 0) {
+                this.$$message({
+                    message: "请选择批量删除对象",
+                    type: "warning"
+                });
+                return;
+            }
             this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
                 type: "warning"
             })
                 .then(() => {
-                    this.$message({
-                        type: "success",
-                        message: "删除成功!"
-                    });
+                    if (Array.isArray(id)) {
+                        this.$propertyApi.personManagement.household
+                            .deleteList({
+                                ids: id
+                            })
+                            .then(res => {
+                                if (res.code == 1000) {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "success"
+                                    });
+                                    this.$refs.page.getList(1);
+                                } else {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "error"
+                                    });
+                                }
+                            });
+                    } else {
+                        this.$propertyApi.personManagement.household
+                            .delete({
+                                id: id
+                            })
+                            .then(res => {
+                                if (res.code == 1000) {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "success"
+                                    });
+                                    this.$refs.page.getList(1);
+                                } else {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "error"
+                                    });
+                                }
+                            });
+                    }
                 })
                 .catch(() => {
                     this.$message({
@@ -1061,23 +483,21 @@ export default {
                         message: "已取消删除"
                     });
                 });
-        },
-        //获取图片
-        getImgUrl1(data) {
-            this.addForm.certificateImg[0] = data
-        },
-        getImgUrl2(data) {
-            this.addForm.certificateImg[1] = data
-        },
-        getImgUrl3(data) {
-            this.addForm.gatherImg[0] = data
-        },
-        getImgUrl4(data) {
-            this.addForm.gatherImg[0] = data
-        },
+        }
     },
     components: {
-        ctrlPage, imgUpload
+        ctrlPage,
+        Dictionary,
+        DictionaryText,
+        imgUpload,
+        areaId,
+        buildingId,
+        elementId,
+        roomId,
+        addDialog,
+        detailDialog,
+        updateDialog,
+        xuzuDialog
     }
 };
 </script>

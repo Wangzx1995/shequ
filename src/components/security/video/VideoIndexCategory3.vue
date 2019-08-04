@@ -4,8 +4,8 @@
         <div class="search-container">
             <h4>播放列表</h4>
             <span>
-                <el-button size="mini" plain class="custom-mini">收藏全部</el-button>
-                <el-button size="mini" plain class="custom-mini">关闭全部</el-button>
+                <el-button size="mini" plain class="custom-mini" :disabled="list.length ? false : true" @click="addCollectAll">收藏全部</el-button>
+                <el-button size="mini" plain class="custom-mini" :disabled="list.length ? false : true" @click="$parent.closeAll">关闭全部</el-button>
             </span>
         </div>
         <!---->
@@ -13,21 +13,18 @@
             <el-tab-pane label="监控目录"></el-tab-pane>
             <el-tab-pane label="收藏夹"></el-tab-pane>
             <el-tab-pane label="播放列表">
-                <el-tree
-                    class="count"
-                    :data="data1"
-                    show-checkbox
-                    node-key="id"
-                    :props="defaultProps"
-                >
-                    <span class="custom-between-node" slot-scope="{ node }">
-                        <span :class="(node.checked && node.isLeaf) ? 'color' : ''">{{ node.label }}</span>
-                        <span>
-                            <i class="icon-x-shoucang off"></i>
-                            <!-- <i class="icon-x-shoucang1 on"></i> -->
+                <template v-if="list.length">
+                    <span class="custom-between-node" v-for="lst in list" :key="lst.id">
+                        <span class="label" @click="addPlay(lst)">{{ lst.name }}</span>
+                        <span class="ic">
+                            <i class="icon-x-shoucang1 on" v-if="$parent.getCollectStatus({ data: lst })" @click="toggleCollect(lst, $event)"></i>
+                            <i class="icon-x-shoucang off" v-else @click="toggleCollect(lst, $event, 1)"></i>
                         </span>
                     </span>
-                </el-tree>
+                </template>
+                <div v-else class="com-loading-text">
+                    <el-link type="info" :underline="false">暂无数据</el-link>
+                </div>
             </el-tab-pane>
             <el-tab-pane label="视频轮巡"></el-tab-pane>
             <el-tab-pane label="快捷播放"></el-tab-pane>
@@ -38,53 +35,38 @@
 <script>
     export default {
         props: {
-            tabIndex: String
+            tabIndex: String,
+            list: Array
         },
         data () {
             return {
-                
-                data1: [{
-                    id: 1,
-                    label: '一级 1',
-                    children: [{
-                        id: 4,
-                        label: '二级 1-1',
-                        children: [{
-                        id: 9,
-                        label: '三级 1-1-1'
-                        }, {
-                        id: 10,
-                        label: '三级 1-1-2'
-                        }]
-                    }]
-                    }, {
-                    id: 2,
-                    label: '一级 2',
-                    children: [{
-                        id: 5,
-                        label: '二级 2-1'
-                    }, {
-                        id: 6,
-                        label: '二级 2-2'
-                    }]
-                    }, {
-                    id: 3,
-                    label: '一级 3',
-                    children: [{
-                        id: 7,
-                        label: '二级 3-1'
-                    }, {
-                        id: 8,
-                        label: '二级 3-2'
-                    }]
-                }],
-                    defaultProps: {
-                    children: 'children',
-                    label: 'label'
-                }
             }
         },
         methods: {
+            // 收藏全部
+            addCollectAll () {
+                let ids = []
+                this.list.forEach(v => {
+                    ids.push(v.id)
+                })
+                this.$parent.addCollect(ids)
+            },
+            // 加入播放
+            addPlay (data) {
+                this.$parent.addPlay(data)
+            },
+            
+            // 添加/取消收藏
+            toggleCollect (data, $event, type) {
+                $event.stopPropagation()
+                // 添加收藏
+                if (type == 1) {
+                    this.$parent.addCollect([data.id])
+                } else {
+                    // 取消收藏
+                    this.$parent.cancelCollect([data.id])
+                }
+            },
             handleTab (tab) {
                 (this.tabIndex != tab.index) && this.$emit('handleTab', tab.index)
             }
@@ -94,3 +76,9 @@
         }
     }
 </script>
+<style scoped>
+    .custom-between-node {
+        height: 36px;
+        line-height: 36px;
+    }
+</style>

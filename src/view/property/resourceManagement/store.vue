@@ -6,15 +6,19 @@
                 :model="selectForm"
                 class="demo-form-inline"
                 label-position="left"
+                ref="selectForm"
             >
                 <el-form-item label="关键词">
                     <el-input
-                        v-model="selectForm.user"
+                        v-model="selectForm.search"
                         placeholder="关键词"
                     ></el-input>
                 </el-form-item>
                 <el-form-item style="float:right">
-                    <el-button type="primary">查询<i class="icon-x-sousuo el-icon--right"></i></el-button>
+                    <el-button
+                        type="primary"
+                        @click="$refs.page.getList(1)"
+                    >查询<i class="icon-x-sousuo el-icon--right"></i></el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -27,12 +31,13 @@
                             type="primary"
                             plain
                             size="mini"
-                            @click="dialogVisible=true"
+                            @click="openAddDialog()"
                         >新增</el-button>
                         <el-button
                             type="danger"
                             plain
                             size="mini"
+                            @click="del(deleteList)"
                         >批量删除</el-button>
                     </template>
                 </div>
@@ -62,7 +67,7 @@
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
+                        prop="code"
                         label="仓库编码"
                         align="center"
                     >
@@ -80,7 +85,7 @@
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="name"
+                        prop="brand"
                         label="物资品牌（种）"
                         align="center"
                     >
@@ -104,28 +109,36 @@
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="name"
+                        prop="linkman"
                         label="负责人"
                         align="center"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="name"
+                        prop="phone"
                         label="联系方式"
                         align="center"
                     >
                     </el-table-column>
                     <el-table-column
                         label="操作"
-                        width="150"
+                        width="200"
                         align="center"
                     >
                         <template slot-scope="scope">
-                            <el-button type="primary">编辑</el-button>
+                            <el-button
+                                type="primary"
+                                @click="openDetailDialog(scope.row.id)"
+                            >查看</el-button>
+                            <span class="com-page-header-title line"></span>
+                            <el-button
+                                type="primary"
+                                @click="openUpdateDialog(scope.row.id)"
+                            >编辑</el-button>
                             <span class="com-page-header-title line"></span>
                             <el-button
                                 type="danger"
-                                @click="del(scope.row)"
+                                @click="del(scope.row.id)"
                             >删除</el-button>
                         </template>
                     </el-table-column>
@@ -137,222 +150,127 @@
                 />
             </div>
         </div>
-        <el-dialog
-            title="新增仓库"
-            :visible.sync="dialogVisible"
-            width="800px"
-            :modal-append-to-body='false'
-            center
-        >
-            <el-form
-                :model="form"
-                :rules="rules"
-                ref="ruleForm"
-                label-width="100px"
-                class="demo-ruleForm dialog-form"
-                label-position="left"
-            >
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="仓库编号"
-                            prop="num"
-                        >
-                            <el-input v-model="form.name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="联系方式"
-                            prop="tel"
-                        >
-                            <el-button
-                                type="primary"
-                                size="mini"
-                                @click="innerVisible = true"
-                            >选择人员</el-button>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="仓库名称"
-                            prop="num"
-                        >
-                            <el-input v-model="form.name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="联系方式"
-                            prop="tel"
-                        >
-                            <el-input v-model="form.name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item label="仓库地址">
-                            <el-input
-                                type="textarea"
-                                v-model="form.name"
-                                style="width:200px;"
-                            ></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item label="备注">
-                            <el-input
-                                type="textarea"
-                                v-model="form.name"
-                                style="width:200px;"
-                            ></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="dialogVisible = false"
-                >保 存</el-button>
-                <el-button @click="dialogVisible = false">取 消</el-button>
-            </div>
-        </el-dialog>
-        <el-dialog
-            width="30%"
-            title="内层 Dialog"
-            :visible.sync="innerVisible"
-            :modal-append-to-body='false'
-        >
-            <el-transfer
-                filterable
-                :filter-method="filterMethod"
-                filter-placeholder="请输入城市拼音"
-                v-model="value"
-                :data="transferData"
-            >
-            </el-transfer>
-        </el-dialog>
+        <addDialog ref="addDialog" />
+        <detailDialog ref="detailDialog" />
+        <updateDialog ref="updateDialog" />
     </div>
 </template>
 
 <script>
 import ctrlPage from "@/components/common/other/CtrlPage";
 
+import addDialog from "@/components/property/resourceManagement/store/addDialog";
+import detailDialog from "@/components/property/resourceManagement/store/detailDialog";
+import updateDialog from "@/components/property/resourceManagement/store/updateDialog";
+
 export default {
     name: "property-resourceManagement-store",
     data() {
-        const generateData = _ => {
-            const data = [];
-            const cities = [
-                "上海",
-                "北京",
-                "广州",
-                "深圳",
-                "南京",
-                "西安",
-                "成都"
-            ];
-            const pinyin = [
-                "shanghai",
-                "beijing",
-                "guangzhou",
-                "shenzhen",
-                "nanjing",
-                "xian",
-                "chengdu"
-            ];
-            cities.forEach((city, index) => {
-                data.push({
-                    label: city,
-                    key: index,
-                    pinyin: pinyin[index]
-                });
-            });
-            return data;
-        };
         return {
             selectForm: {
                 user: ""
             },
             list: [],
-            form: {
-                num: "",
-                name: ""
-            },
-            rules: {
-                num: [
-                    {
-                        type: "date",
-                        required: true,
-                        message: "请输入部门编码",
-                        trigger: "blur"
-                    }
-                ],
-                name: [
-                    {
-                        type: "date",
-                        required: true,
-                        message: "请输入部门简称",
-                        trigger: "blur"
-                    }
-                ]
-            },
-            dialogVisible: false,
-            innerVisible: false,
-            transferData: generateData(),
-            value: [],
-            filterMethod(query, item) {
-                return item.pinyin.indexOf(query) > -1;
-            }
+            deleteList: []
         };
     },
     mounted() {
         this.$refs.page.getList(1);
     },
     methods: {
+        //多选框
         handleSelectionChange(val) {
-            this.multipleSelection = val;
-        },
-        getList(pageIndex, rows, callback) {
-            if (!this.list.length) {
-                for (let i = 1; i <= 11; i++) {
-                    this.list.push({
-                        num: "c" + i,
-                        name: "行政部"
-                    });
-                }
+            this.deleteList = [];
+            for (let i in val) {
+                this.deleteList.push(val[i].id);
             }
-            callback(this.list, 12);
         },
-        del() {
+        //打开新增窗口
+        openAddDialog() {
+            this.$refs.addDialog.showDialog();
+        },
+        //打开编辑窗口
+        openUpdateDialog(id) {
+            this.$refs.updateDialog.showDialog(id);
+        },
+        //打开查看窗口
+        openDetailDialog(id) {
+            this.$refs.detailDialog.showDialog(id);
+        },
+        //查询/获取List
+        getList(pageIndex, rows, callback) {
+            this.$propertyApi.resourceManagement.store
+                .list({
+                    pageNum: pageIndex,
+                    pageSize: rows,
+                    search: this.selectForm.search
+                })
+                .then(res => {
+                    if (res.code == 1000) {
+                        this.list = res.data.list;
+                        callback(this.list, res.data.total);
+                    } else {
+                        this.$$alert({
+                            message: res.msg,
+                            type: "error"
+                        });
+                    }
+                });
+        },
+        //删除操作
+        del(id) {
+            if (id.length == 0) {
+                this.$$message({
+                    message: "请选择批量删除对象",
+                    type: "warning"
+                });
+                return;
+            }
             this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
                 type: "warning"
             })
                 .then(() => {
-                    this.$message({
-                        type: "success",
-                        message: "删除成功!"
-                    });
+                    if (Array.isArray(id)) {
+                        this.$propertyApi.resourceManagement.store
+                            .deleteList({
+                                ids: id
+                            })
+                            .then(res => {
+                                if (res.code == 1000) {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "success"
+                                    });
+                                    this.$refs.page.getList(1);
+                                } else {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "error"
+                                    });
+                                }
+                            });
+                    } else {
+                        this.$propertyApi.resourceManagement.store
+                            .delete({
+                                id: id
+                            })
+                            .then(res => {
+                                if (res.code == 1000) {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "success"
+                                    });
+                                    this.$refs.page.getList(1);
+                                } else {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "error"
+                                    });
+                                }
+                            });
+                    }
                 })
                 .catch(() => {
                     this.$message({
@@ -363,7 +281,10 @@ export default {
         }
     },
     components: {
-        ctrlPage
+        ctrlPage,
+        addDialog,
+        detailDialog,
+        updateDialog
     }
 };
 </script>

@@ -1,34 +1,38 @@
 <template>
     <div>
-        <script id="editor" type="text/plain"></script>
+        <script
+            id="editor"
+            type="text/plain"
+        ></script>
     </div>
 </template>
 <script>
-    export default {
-        name: 'UE',
-        data() {
-            return {
-                editor: null
-            }
+export default {
+    name: "UE",
+    data() {
+        return {
+            editor: null
+        };
+    },
+    methods: {
+        load(callback) {
+            this.editor = UE.getEditor("editor"); // 初始化UE
+            this.editor.addListener("ready", function() {
+                if (typeof callback === "function") {
+                    callback();
+                }
+            });
         },
-        methods: {
-            load(callback) {
-                this.editor = UE.getEditor('editor') // 初始化UE
-                this.editor.addListener('ready', function() {
-                    if(typeof callback === 'function') {
-                        callback()
-                    }
-                });
-            },
-            getContent() { // 获取内容方法
-                return this.editor.getContent()
-            },
-            setContent(content) {
-                this.editor.setContent(content)
-            }
+        getContent() {
+            // 获取内容方法
+            return this.editor.getContent();
         },
-        destroyed() {
-            this.editor.destroy()
+        setContent(content) {
+            this.editor.setContent(content);
         }
+    },
+    destroyed() {
+        this.editor.destroy();
     }
+};
 </script>

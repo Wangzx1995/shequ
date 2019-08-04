@@ -92,7 +92,7 @@
             </div>
         </div>
         <!-- copyright -->
-        <p class="index-copyright">copyright © {{ year }}浙江微风智能科技有限公司 版权所有</p>
+        <p class="index-copyright">Copyright © {{ year }}浙江微风智能科技有限公司 版权所有</p>
     </div>
 </template>
 

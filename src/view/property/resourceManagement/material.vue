@@ -79,7 +79,10 @@
                     ></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary">查询<i class="icon-x-sousuo el-icon--right"></i></el-button>
+                    <el-button
+                        type="primary"
+                        @click="$refs.page.getList(1)"
+                    >查询<i class="icon-x-sousuo el-icon--right"></i></el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -92,7 +95,7 @@
                             type="primary"
                             plain
                             size="mini"
-                            @click="dialogVisible=true"
+                            @click="openAddDialog()"
                         >新增</el-button>
                         <el-button
                             type="warning"
@@ -108,6 +111,7 @@
                             type="danger"
                             plain
                             size="mini"
+                            @click="del(deleteList)"
                         >批量删除</el-button>
                     </template>
                 </div>
@@ -232,13 +236,19 @@
                                 @click="dialogVisible2=true"
                             >入库</el-button>
                             <span class="com-page-header-title line"></span>
-                            <el-button type="primary">查看</el-button>
+                            <el-button
+                                type="primary"
+                                @click="openDetailDialog(scope.row.id)"
+                            >查看</el-button>
                             <span class="com-page-header-title line"></span>
-                            <el-button type="primary">编辑</el-button>
+                            <el-button
+                                type="primary"
+                                @click="openUpdateDialog(scope.row.id)"
+                            >编辑</el-button>
                             <span class="com-page-header-title line"></span>
                             <el-button
                                 type="danger"
-                                @click="del(scope.row)"
+                                @click="del(scope.row.id)"
                             >删除</el-button>
                         </template>
                     </el-table-column>
@@ -251,218 +261,14 @@
             </div>
         </div>
         <el-dialog
-            title="新增物资"
-            :visible.sync="dialogVisible"
-            width="800px"
-            :modal-append-to-body='false'
-            center
-        >
-            <el-form
-                :model="form"
-                :rules="rules"
-                ref="ruleForm"
-                label-width="100px"
-                class="demo-ruleForm dialog-form"
-                label-position="left"
-            >
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="一级分类"
-                            prop="region"
-                        >
-                            <el-select
-                                clearable
-                                v-model="form.name"
-                                placeholder="请选择一级分类"
-                            >
-                                <el-option
-                                    label="一级分类一"
-                                    value="shanghai"
-                                ></el-option>
-                                <el-option
-                                    label="一级分类二"
-                                    value="beijing"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="物资品牌"
-                            prop="num"
-                        >
-                            <el-input v-model="form.name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="二级分类"
-                            prop="region"
-                        >
-                            <el-select
-                                clearable
-                                v-model="form.name"
-                                placeholder="请选择二级分类"
-                            >
-                                <el-option
-                                    label="二级分类一"
-                                    value="shanghai"
-                                ></el-option>
-                                <el-option
-                                    label="二级分类二"
-                                    value="beijing"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="物资型号"
-                            prop="num"
-                        >
-                            <el-input v-model="form.name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="物资编号"
-                            prop="num"
-                        >
-                            <el-input v-model="form.name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="采购日期"
-                            prop="region"
-                        >
-                            <el-date-picker
-                                v-model="form.name"
-                                type="date"
-                                placeholder="选择日期"
-                            >
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="物资名称"
-                            prop="num"
-                        >
-                            <el-input v-model="form.name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="报废日期"
-                            prop="region"
-                        >
-                            <el-date-picker
-                                v-model="form.name"
-                                type="date"
-                                placeholder="选择日期"
-                            >
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="数量"
-                            prop="num"
-                        >
-                            <el-input v-model="form.name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="所属仓库"
-                            prop="region"
-                        >
-                            <el-select
-                                clearable
-                                v-model="form.name"
-                                placeholder="请选择所属仓库"
-                            >
-                                <el-option
-                                    label="区域一"
-                                    value="shanghai"
-                                ></el-option>
-                                <el-option
-                                    label="区域二"
-                                    value="beijing"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="计量单位"
-                            prop="num"
-                        >
-                            <el-input v-model="form.name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="备注"
-                            prop="region"
-                        >
-                            <el-input v-model="form.name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="dialogVisible = false"
-                >保 存</el-button>
-                <el-button @click="dialogVisible = false">取 消</el-button>
-            </div>
-        </el-dialog>
-        <el-dialog
             title="出库"
-            :visible.sync="dialogVisible2"
+            :visible.sync="dialogVisible"
             width="400px"
             :modal-append-to-body='false'
             center
         >
             <el-form
                 :model="form"
-                :rules="rules"
                 ref="ruleForm"
                 label-width="100px"
                 class="demo-ruleForm dialog-form"
@@ -491,11 +297,18 @@
                 <el-button @click="dialogVisible2 = false">取 消</el-button>
             </div>
         </el-dialog>
+        <addDialog ref="addDialog" />
+        <detailDialog ref="detailDialog" />
+        <updateDialog ref="updateDialog" />
     </div>
 </template>
 
 <script>
 import ctrlPage from "@/components/common/other/CtrlPage";
+
+import addDialog from "@/components/property/resourceManagement/material/addDialog";
+import detailDialog from "@/components/property/resourceManagement/material/detailDialog";
+import updateDialog from "@/components/property/resourceManagement/material/updateDialog";
 
 export default {
     name: "property-resourceManagement-material",
@@ -506,37 +319,34 @@ export default {
             },
             list: [],
             form: {
-                num: "",
-                name: ""
-            },
-            rules: {
-                num: [
-                    {
-                        type: "date",
-                        required: true,
-                        message: "请输入部门编码",
-                        trigger: "blur"
-                    }
-                ],
-                name: [
-                    {
-                        type: "date",
-                        required: true,
-                        message: "请输入部门简称",
-                        trigger: "blur"
-                    }
-                ]
+                num: null
             },
             dialogVisible: false,
-            dialogVisible2: false,
+            deleteList: []
         };
     },
     mounted() {
         this.$refs.page.getList(1);
     },
     methods: {
+        //多选框
         handleSelectionChange(val) {
-            this.multipleSelection = val;
+            this.deleteList = [];
+            for (let i in val) {
+                this.deleteList.push(val[i].id);
+            }
+        },
+        //打开新增窗口
+        openAddDialog() {
+            this.$refs.addDialog.showDialog();
+        },
+        //打开编辑窗口
+        openUpdateDialog(id) {
+            this.$refs.updateDialog.showDialog(id);
+        },
+        //打开查看窗口
+        openDetailDialog(id) {
+            this.$refs.detailDialog.showDialog(id);
         },
         getList(pageIndex, rows, callback) {
             if (!this.list.length) {
@@ -570,7 +380,10 @@ export default {
         }
     },
     components: {
-        ctrlPage
+        ctrlPage,
+        addDialog,
+        detailDialog,
+        updateDialog
     }
 };
 </script>

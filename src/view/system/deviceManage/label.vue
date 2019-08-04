@@ -47,11 +47,12 @@
                     @selection-change="handleSelectionChange"
                     :header-cell-style="{background:'#edf3f9',color:'#333333',padding:'0'}"
                     :cell-style="{padding:'0',color:'#999999'}"
-                    <el-table-column
-                    type="selection"
-                    width="50"
-                    align="center"
                 >
+                    <el-table-column
+                        type="selection"
+                        width="50"
+                        align="center"
+                    >
                     </el-table-column>
                     <el-table-column
                         type="index"

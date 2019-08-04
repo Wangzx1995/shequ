@@ -6,121 +6,63 @@
                 :model="selectForm"
                 class="demo-form-inline"
                 label-position="left"
+                ref="selectForm"
             >
                 <el-form-item label="所属片区">
-                    <el-select
-                        clearable
-                        v-model="selectForm.user"
-                        placeholder="请选择片区"
-                    >
-                        <el-option
-                            label="片区一"
-                            value="shanghai"
-                        ></el-option>
-                        <el-option
-                            label="片区二"
-                            value="beijing"
-                        ></el-option>
-                    </el-select>
+                    <areaId v-model="selectForm.areaId" />
                 </el-form-item>
                 <el-form-item label="所属楼栋">
-                    <el-select
-                        clearable
-                        v-model="selectForm.user"
-                        placeholder="请选择楼栋"
-                    >
-                        <el-option
-                            label="楼栋一"
-                            value="shanghai"
-                        ></el-option>
-                        <el-option
-                            label="楼栋二"
-                            value="beijing"
-                        ></el-option>
-                    </el-select>
+                    <buildingId
+                        :areaId="selectForm.areaId"
+                        v-model="selectForm.buildingId"
+                    />
                 </el-form-item>
                 <el-form-item label="所属单元">
-                    <el-select
-                        clearable
-                        v-model="selectForm.user"
-                        placeholder="请选择单元"
-                    >
-                        <el-option
-                            label="单元一"
-                            value="shanghai"
-                        ></el-option>
-                        <el-option
-                            label="单元二"
-                            value="beijing"
-                        ></el-option>
-                    </el-select>
+                    <elementId
+                        :buildingId="selectForm.buildingId"
+                        v-model="selectForm.elementId"
+                    />
                 </el-form-item>
                 <el-form-item label="所属房屋">
-                    <el-select
-                        clearable
-                        v-model="selectForm.user"
-                        placeholder="请选择房屋"
-                    >
-                        <el-option
-                            label="房屋一"
-                            value="shanghai"
-                        ></el-option>
-                        <el-option
-                            label="房屋二"
-                            value="beijing"
-                        ></el-option>
-                    </el-select>
+                    <roomId
+                        :elementId="selectForm.elementId"
+                        v-model="selectForm.roomId"
+                    />
                 </el-form-item>
                 <el-form-item label="身份类型">
-                    <el-select
-                        clearable
-                        v-model="selectForm.user"
-                        placeholder="请选择身份类型"
-                    >
-                        <el-option
-                            label="身份类型一"
-                            value="shanghai"
-                        ></el-option>
-                        <el-option
-                            label="身份类型二"
-                            value="beijing"
-                        ></el-option>
-                    </el-select>
+                    <Dictionary
+                        :typeCode="1007"
+                        v-model="selectForm.identityType"
+                    />
                 </el-form-item>
                 <el-form-item label="关键词">
                     <el-input
-                        v-model="selectForm.user"
+                        v-model="selectForm.search"
                         placeholder="关键词"
                     ></el-input>
                 </el-form-item>
                 <el-form-item label="入住时间">
                     <el-date-picker
-                        v-model="selectForm.user"
+                        v-model="selectForm.timeValue"
                         type="daterange"
                         range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
+                        start-placeholder="合同开始日"
+                        end-placeholder="合同结束日"
+                        value-format="yyyy/MM/dd"
                     >
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item label="特殊人群">
-                    <el-select
-                        clearable
-                        v-model="selectForm.user"
-                        placeholder="请选择特殊人群"
-                    >
-                        <el-option
-                            label="特殊人群一"
-                            value="shanghai"
-                        ></el-option>
-                        <el-option
-                            label="特殊人群二"
-                            value="beijing"
-                        ></el-option>
-                    </el-select>
+                    <Dictionary
+                        :typeCode="1011"
+                        v-model="selectForm.spcialCrowd"
+                    />
                 </el-form-item>
                 <el-form-item style="float:right">
-                    <el-button type="primary">查询<i class="icon-x-sousuo el-icon--right"></i></el-button>
+                    <el-button
+                        type="primary"
+                        @click="$refs.page.getList(1)"
+                    >查询<i class="icon-x-sousuo el-icon--right"></i></el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -133,7 +75,7 @@
                             type="primary"
                             plain
                             size="mini"
-                            @click="dialogVisible=true"
+                            @click="openAddDialog()"
                         >新增</el-button>
                         <el-button
                             type="danger"
@@ -169,22 +111,30 @@
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
+                        prop="name"
                         label="姓名"
                         align="center"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
                         label="特殊人群"
                         align="center"
                     >
+                        <template slot-scope="scope">
+                            <DictionaryText
+                                :typeCode="1011"
+                                :dicCode="scope.row.spcialCrowd"
+                            />
+                        </template>
                     </el-table-column>
                     <el-table-column
-                        prop="name"
                         label="性别"
                         align="center"
                     >
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.sex==1">男</span>
+                            <span v-if="scope.row.sex==2">女</span>
+                        </template>
                     </el-table-column>
                     <el-table-column
                         prop="name"
@@ -193,52 +143,62 @@
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="name"
+                        prop="phone"
                         label="手机号"
                         align="center"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="name"
                         label="身份类型"
                         align="center"
                     >
+                        <template slot-scope="scope">
+                            <DictionaryText
+                                :typeCode="1007"
+                                :dicCode="scope.row.identityType"
+                            />
+                        </template>
                     </el-table-column>
                     <el-table-column
-                        prop="name"
+                        prop="areaName"
                         label="所属片区"
                         align="center"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="name"
+                        prop="buildingName"
                         label="所属楼栋"
                         align="center"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="name"
+                        prop="roomName"
                         label="所属房屋"
                         align="center"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="name"
+                        prop="checkIn"
                         label="入住时间"
                         align="center"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="name"
+                        prop="accessoryIcon"
                         label="图标"
                         align="center"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="name"
                         label="探望/监督"
                         align="center"
                     >
+                        <template slot-scope="scope">
+                            <span
+                                style="cursor: pointer;"
+                                @click="openCountDialog(scope.row)"
+                            >{{scope.row.count}}</span>
+                        </template>
                     </el-table-column>
                     <el-table-column
                         label="操作"
@@ -248,14 +208,17 @@
                         <template slot-scope="scope">
                             <el-button
                                 type="primary"
-                                @click="dialogVisible=true"
+                                @click="openDetailDialog(scope.row)"
                             >查看</el-button>
                             <span class="com-page-header-title line"></span>
-                            <el-button type="primary">记录</el-button>
+                            <el-button
+                                type="primary"
+                                @click="openJiluDialog(scope.row)"
+                            >记录</el-button>
                             <span class="com-page-header-title line"></span>
                             <el-button
                                 type="danger"
-                                @click="del(scope.row)"
+                                @click="del(scope.row.id)"
                             >删除</el-button>
                         </template>
                     </el-table-column>
@@ -267,96 +230,170 @@
                 />
             </div>
         </div>
-        <el-dialog
-            title="新增特殊人群"
-            :visible.sync="dialogVisible"
-            width="800px"
-            :modal-append-to-body='false'
-            center
-        >
-            <div>
-                没图
-            </div>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="dialogVisible = false"
-                >保 存</el-button>
-                <el-button @click="dialogVisible = false">取 消</el-button>
-            </div>
-        </el-dialog>
+        <detailDialog ref="detailDialog" />
+        <addDialog ref="addDialog" />
+        <jiluDialog ref="jiluDialog" />
+        <countDialog ref="countDialog" />
+
     </div>
 </template>
 
 <script>
 import ctrlPage from "@/components/common/other/CtrlPage";
+import Dictionary from "@/components/common/select/Dictionary";
+import DictionaryText from "@/components/common/select/DictionaryText";
+import areaId from "@/components/property/selectForm/areaId";
+import buildingId from "@/components/property/selectForm/buildingId";
+import elementId from "@/components/property/selectForm/elementId";
+import roomId from "@/components/property/selectForm/roomId";
+
+import detailDialog from "@/components/property/personManagement/household/detailDialog";
+import addDialog from "@/components/property/personManagement/special/addDialog";
+import jiluDialog from "@/components/property/personManagement/special/jiluDialog";
+import countDialog from "@/components/property/personManagement/special/countDialog";
 
 export default {
     name: "property-personManagement-special",
     data() {
         return {
             selectForm: {
-                user: ""
+                type: "3",
+                areaId: null,
+                buildingId: null,
+                elementId: null,
+                roomId: null,
+                identityType: null,
+                search: null,
+                startTime: null,
+                endTime: null,
+                timeValue: null,
+                spcialCrowd: null
             },
             list: [],
-            form: {
-                num: "",
-                name: ""
-            },
-            rules: {
-                num: [
-                    {
-                        type: "date",
-                        required: true,
-                        message: "请输入部门编码",
-                        trigger: "blur"
-                    }
-                ],
-                name: [
-                    {
-                        type: "date",
-                        required: true,
-                        message: "请输入部门简称",
-                        trigger: "blur"
-                    }
-                ]
-            },
-            dialogVisible: false,
+            deleteList: []
         };
     },
     mounted() {
         this.$refs.page.getList(1);
     },
-    methods: {
-        handleSelectionChange(val) {
-            this.multipleSelection = val;
-        },
-        getList(pageIndex, rows, callback) {
-            if (!this.list.length) {
-                for (let i = 1; i <= 11; i++) {
-                    this.list.push({
-                        num: "c" + i,
-                        name: "c" + i
-                    });
-                }
+    watch: {
+        "selectForm.timeValue"() {
+            if (!this.selectForm.timeValue) {
+                this.selectForm.startTime = null;
+                this.selectForm.endTime = null;
+            } else {
+                this.selectForm.startTime = this.selectForm.timeValue[0];
+                this.selectForm.endTime = this.selectForm.timeValue[1];
             }
-            callback(this.list, 12);
+        }
+    },
+    methods: {
+        //多选框
+        handleSelectionChange(val) {
+            this.deleteList = [];
+            for (let i in val) {
+                this.deleteList.push(val[i].id);
+            }
         },
-        del() {
+        //打开查看窗口
+        openDetailDialog(row) {
+            this.$refs.detailDialog.showDialog(row);
+            this.$refs.detailDialog.closeEditDialog();
+        },
+        //打开新增窗口
+        openAddDialog() {
+            this.$refs.addDialog.showDialog();
+        },
+        //打开记录窗口
+        openJiluDialog(row) {
+            this.$refs.jiluDialog.showDialog(row);
+        },
+        openCountDialog(row) {
+            this.$refs.countDialog.showDialog(row);
+        },
+        //查询/获取List
+        getList(pageIndex, rows, callback) {
+            this.$propertyApi.personManagement.household
+                .list({
+                    pageNum: pageIndex,
+                    pageSize: rows,
+                    areaId: this.selectForm.areaId,
+                    buildingId: this.selectForm.buildingId,
+                    elementId: this.selectForm.elementId,
+                    roomId: this.selectForm.roomId,
+                    identityType: this.selectForm.identityType,
+                    search: this.selectForm.search,
+                    startTime: this.selectForm.startTime,
+                    endTime: this.selectForm.endTime,
+                    spcialCrowd: this.selectForm.spcialCrowd,
+                    type: this.selectForm.type
+                })
+                .then(res => {
+                    if (res.code == 1000) {
+                        this.list = res.data.list;
+                        callback(this.list, res.data.total);
+                    } else {
+                        this.$$alert({
+                            message: res.msg,
+                            type: "error"
+                        });
+                    }
+                });
+        },
+        //删除操作
+        del(id) {
+            if (id.length == 0) {
+                this.$$message({
+                    message: "请选择批量删除对象",
+                    type: "warning"
+                });
+                return;
+            }
             this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
                 type: "warning"
             })
                 .then(() => {
-                    this.$message({
-                        type: "success",
-                        message: "删除成功!"
-                    });
+                    if (Array.isArray(id)) {
+                        this.$propertyApi.personManagement.household
+                            .deleteList({
+                                ids: id
+                            })
+                            .then(res => {
+                                if (res.code == 1000) {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "success"
+                                    });
+                                    this.$refs.page.getList(1);
+                                } else {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "error"
+                                    });
+                                }
+                            });
+                    } else {
+                        this.$propertyApi.personManagement.household
+                            .delete({
+                                id: id
+                            })
+                            .then(res => {
+                                if (res.code == 1000) {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "success"
+                                    });
+                                    this.$refs.page.getList(1);
+                                } else {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "error"
+                                    });
+                                }
+                            });
+                    }
                 })
                 .catch(() => {
                     this.$message({
@@ -367,7 +404,17 @@ export default {
         }
     },
     components: {
-        ctrlPage
+        ctrlPage,
+        Dictionary,
+        DictionaryText,
+        areaId,
+        buildingId,
+        elementId,
+        roomId,
+        detailDialog,
+        addDialog,
+        jiluDialog,
+        countDialog
     }
 };
 </script>

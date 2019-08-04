@@ -77,11 +77,11 @@ export default [
         component: Frame,
         children: [
             {
-                path: '消防用电',
+                path: 'fire-index',
                 meta: {
                     title: '消防用电'
                 },
-                component: () => import("@/view/security/SecurityIndex")
+                component: () => import("@/view/security/fire/FireIndex")
             },
         ]
     },
@@ -139,46 +139,55 @@ export default [
         component: Frame,
         children: [
             {
-                path: '预案编制',
+                path: 'establi-plans',
                 meta: {
                     title: '预案编制'
                 },
-                component: () => import("@/view/security/SecurityIndex")
+                component: () => import("@/view/security/plan/EstabliPlans")
             },
             {
-                path: '我的预案',
+                path: 'my-plans',
                 meta: {
                     title: '我的预案'
                 },
-                component: () => import("@/view/security/SecurityIndex")
+                component: () => import("@/view/security/plan/MyPlans")
             },
             {
-                path: '预案审核',
+                path: 'check-plans',
                 meta: {
                     title: '预案审核'
                 },
-                component: () => import("@/view/security/SecurityIndex")
+                component: () => import("@/view/security/plan/CheckPlans")
             },
             {
-                path: '当前预案',
+                path: 'current-plans',
                 meta: {
                     title: '当前预案'
                 },
-                component: () => import("@/view/security/SecurityIndex")
+                component: () => import("@/view/security/plan/CurrentPlans")
             },
             {
-                path: '历史预案',
+                path: 'current-plans-detail',
+                meta: {
+                    title: '当前预案',
+                    // hiddenMenu: true
+                },
+                hiddenMenu: true,
+                component: () => import("@/view/security/plan/CurrentPlanDetail")
+            },
+            {
+                path: 'previous-plans',
                 meta: {
                     title: '历史预案'
                 },
-                component: () => import("@/view/security/SecurityIndex")
+                component: () => import("@/view/security/plan/PreviousPlans")
             },
             {
-                path: '启动预案',
+                path: 'open-plan',
                 meta: {
                     title: '启动预案'
                 },
-                component: () => import("@/view/security/SecurityIndex")
+                component: () => import("@/view/security/plan/OpenPlan")
             },
         ]
     },

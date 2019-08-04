@@ -1,6 +1,7 @@
 <template>
     <div class="property">
         <div class="com-main-inner selectBox">
+            <!-- 查询框 -->
             <el-form
                 :inline="true"
                 :model="selectForm"
@@ -50,6 +51,7 @@
             </el-form>
         </div>
         <br>
+        <!-- 表名，操作按钮 -->
         <div class="com-page-header-wrap clear com-main-inner">
             <div class="com-main-inner-title">
                 <div class="clear fr">
@@ -80,6 +82,7 @@
                 </div>
                 <span class="com-page-header-title">单元管理列表</span>
             </div>
+            <!-- 数据表 -->
             <div class="com-main-inner-table">
                 <el-table
                     :data="list"
@@ -163,273 +166,26 @@
                 />
             </div>
         </div>
-        <el-dialog
-            title="新增单元"
-            :visible.sync="dialogVisible.add"
-            width="800px"
-            :modal-append-to-body='false'
-            center
-        >
-            <el-form
-                :model="addForm"
-                :rules="rules"
-                ref="addForm"
-                label-width="100px"
-                class="demo-ruleForm dialog-form"
-                label-position="left"
-            >
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="单元编号"
-                            prop="code"
-                        >
-                            <el-input v-model="addForm.code"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="所属片区"
-                            prop="areaId"
-                        >
-                            <el-select
-                                v-model="addForm.areaId"
-                                placeholder="请选择所属片区"
-                            >
-                                <el-option
-                                    v-for="item in areaList"
-                                    :key="item.value"
-                                    :label="item.areaName"
-                                    :value="item.areaId"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="单元名称"
-                            prop="name"
-                        >
-                            <el-input v-model="addForm.name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="所属楼栋"
-                            prop="buildingId"
-                        >
-                            <el-select
-                                v-model="addForm.buildingId"
-                                placeholder="请选择楼栋"
-                            >
-                                <el-option
-                                    v-for="item in buildingList"
-                                    :key="item.value"
-                                    :label="item.buildingName"
-                                    :value="item.buildingId"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="所属楼层"
-                            prop="floorNumber"
-                        >
-                            <el-input v-model="addForm.floorNumber"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="add()"
-                >保 存</el-button>
-                <el-button @click="dialogVisible.add = false">取 消</el-button>
-            </div>
-        </el-dialog>
-        <el-dialog
-            title="编辑单元"
-            :visible.sync="dialogVisible.update"
-            width="800px"
-            :modal-append-to-body='false'
-            center
-        >
-            <el-form
-                :model="updateForm"
-                :rules="rules"
-                ref="updateForm"
-                label-width="100px"
-                class="demo-ruleForm dialog-form"
-                label-position="left"
-            >
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="单元编号"
-                            prop="code"
-                        >
-                            <el-input v-model="updateForm.code"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="所属片区"
-                            prop="areaId"
-                        >
-                            <el-select
-                                v-model="updateForm.areaId"
-                                placeholder="请选择所属片区"
-                            >
-                                <el-option
-                                    v-for="item in areaList"
-                                    :key="item.value"
-                                    :label="item.areaName"
-                                    :value="item.areaId"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="单元名称"
-                            prop="name"
-                        >
-                            <el-input v-model="updateForm.name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="所属楼栋"
-                            prop="buildingId"
-                        >
-                            <el-select
-                                v-model="updateForm.buildingId"
-                                placeholder="请选择楼栋"
-                            >
-                                <el-option
-                                    v-for="item in buildingList"
-                                    :key="item.value"
-                                    :label="item.buildingName"
-                                    :value="item.buildingId"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="所属楼层"
-                            prop="floorNumber"
-                        >
-                            <el-input v-model="updateForm.floorNumber"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="update()"
-                >保 存</el-button>
-                <el-button @click="dialogVisible.update = false">取 消</el-button>
-            </div>
-        </el-dialog>
-        <el-dialog
-            title="查看详情"
-            :visible.sync="dialogVisible.detail"
-            width="800px"
-            :modal-append-to-body='false'
-            center
-            class="updateDialog"
-        >
-            <el-row>
-                <el-col :span="3">
-                    <span>楼栋编号</span>
-                </el-col>
-                <el-col :span="8">
-                    <span>{{detailForm.code}}</span>
-                </el-col>
-                <el-col
-                    :span="3"
-                    :offset="1"
-                >
-                    <span>有无电梯</span>
-                </el-col>
-                <el-col :span="8">
-                    <span v-if="detailForm.elevator==1">有</span>
-                    <span v-if="detailForm.elevator==2">无</span>
-                </el-col>
-            </el-row>
-            <el-row>
-                <el-col :span="3">
-                    <span>楼栋名称</span>
-                </el-col>
-                <el-col :span="8">
-                    <span>{{detailForm.name}}</span>
-                </el-col>
-                <el-col
-                    :span="3"
-                    :offset="1"
-                >
-                    <span>建筑年代</span>
-                </el-col>
-                <el-col :span="8">
-                    <span>{{detailForm.buildingAge}}</span>
-                </el-col>
-            </el-row>
-            <el-row>
-                <el-col :span="3">
-                    <span>所属片区</span>
-                </el-col>
-                <el-col :span="8">
-                    <span>{{detailForm.areaId}}</span>
-                </el-col>
-                <el-col
-                    :span="3"
-                    :offset="1"
-                >
-                    <span>产权性质</span>
-                </el-col>
-                <el-col :span="8">
-                    <span>1</span>
-                </el-col>
-            </el-row>
-        </el-dialog>
+        <!-- 新增 -->
+        <addDialog
+            ref="addDialog"
+            :areaList="areaList"
+        />
+        <!-- 编辑 -->
+        <updateDialog
+            ref="updateDialog"
+            :areaList="areaList"
+        />
+        <!-- 详情 -->
+        <detailDialog ref="detailDialog" />
     </div>
 </template>
 
 <script>
 import ctrlPage from "@/components/common/other/CtrlPage";
-import { getItemName } from "@/filters/index.js";
+import addDialog from "@/components/property/houseProperty/unit/addDialog";
+import updateDialog from "@/components/property/houseProperty/unit/updateDialog";
+import detailDialog from "@/components/property/houseProperty/unit/detailDialog";
 
 export default {
     name: "property-houseProperty-unit",
@@ -443,77 +199,26 @@ export default {
             list: [],
             areaList: [],
             buildingList: [],
-            addForm: {
-                areaId: '',
-                buildingId: '',
-                code: '',
-                floorNumber: '',
-                name: ''
-            },
-            updateForm: {},
-            detailForm: {},
-            rules: {
-                code: [
-                    {
-                        required: true,
-                        message: "请输入单元编号",
-                        trigger: "blur"
-                    }
-                ],
-                areaId: [
-                    {
-                        required: true,
-                        message: "请选择所属片区",
-                        trigger: "change"
-                    }
-                ],
-                name: [
-                    {
-                        required: true,
-                        message: "请输入单元名称",
-                        trigger: "blur"
-                    }
-                ],
-                buildingId: [
-                    {
-                        required: true,
-                        message: "请选择楼栋",
-                        trigger: "change"
-                    }
-                ],
-                floorNumber: [
-                    {
-                        required: true,
-                        message: "请输入所属楼层",
-                        trigger: "blur"
-                    }
-                ]
-            },
-            dialogVisible: {
-                add: false,
-                update: false,
-                detail: false
-            },
+
             deleteList: []
         };
     },
     mounted() {
         this.getAreaList()
+        this.getBuildingList(0)
         this.$refs.page.getList(1);
     },
     watch: {
         'selectForm.areaId'() {
-            this.getBuildingList(this.selectForm.areaId)
-        },
-        'addForm.areaId'() {
-            this.getBuildingList(this.addForm.areaId)
-        },
-        'updateForm.areaId'() {
-            this.getBuildingList(this.updateForm.areaId)
+            this.selectForm.buildingId = ''
+            if (this.selectForm.areaId == '') {
+                this.getBuildingList(0)
+            } else {
+                this.getBuildingList(this.selectForm.areaId)
+            }
         }
     },
     methods: {
-        getItemName,
         //多选框
         handleSelectionChange(val) {
             this.deleteList = []
@@ -523,20 +228,15 @@ export default {
         },
         //打开新增窗口
         openAddDialog() {
-            this.dialogVisible.add = true
-            this.$nextTick(() => {
-                this.$refs['addForm'].resetFields();
-            })
+            this.$refs.addDialog.showDialog();
         },
         //打开编辑窗口
-        openUpdateDialog(form) {
-            this.updateForm = form;
-            this.dialogVisible.update = true
+        openUpdateDialog(row) {
+            this.$refs.updateDialog.showDialog(row);
         },
         //打开查看窗口
-        openDetailDialog(form) {
-            this.detailForm = form;
-            this.dialogVisible.detail = true
+        openDetailDialog(row) {
+            this.$refs.detailDialog.showDialog(row);
         },
         //获取片区
         getAreaList() {
@@ -579,29 +279,6 @@ export default {
                     })
                 }
             })
-        },
-        //新增操作
-        add() {
-            this.$refs.addForm.validate(valid => {
-                if (valid) {
-                    this.$propertyApi.houseProperty.unit.add(this.addForm)
-                        .then(res => {
-                            if (res.code == 1000) {
-                                this.dialogVisible.add = false
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'success'
-                                })
-                                this.$refs.page.getList(1);
-                            } else {
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'error'
-                                })
-                            }
-                        })
-                }
-            });
         },
         //删除操作
         del(id) {
@@ -663,32 +340,12 @@ export default {
                     });
                 });
         },
-        //修改操作
-        update() {
-            this.$refs.updateForm.validate(valid => {
-                if (valid) {
-                    this.$propertyApi.houseProperty.unit.update(this.updateForm)
-                        .then(res => {
-                            if (res.code == 1000) {
-                                this.dialogVisible.update = false
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'success'
-                                })
-                                this.$refs.page.getList(1);
-                            } else {
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'error'
-                                })
-                            }
-                        })
-                }
-            });
-        },
     },
     components: {
-        ctrlPage
+        ctrlPage,
+        addDialog,
+        updateDialog,
+        detailDialog
     }
 };
 </script>

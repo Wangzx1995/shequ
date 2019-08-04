@@ -62,6 +62,13 @@ ul,li {
 .com-space20 {
     height: 20px;
 }
+.com-loading-text {
+    text-align: center;
+}
+// 百度地图搜索下拉框
+.tangram-suggestion-main {
+    z-index: 9999999999999999;
+}
 .color-static:active,.color-static:hover {
     color: inherit;
 }
@@ -366,6 +373,25 @@ ul,li {
         background-color: #218ff8;
         border-radius: 3px;
     }
+    &.tag {
+        &:before {
+            display: none;
+        }
+        .el-link {
+            position: static;
+        }
+    }
+    .line-tag {
+        display: block;
+        position: absolute;
+        top: 0px;
+        bottom: 3px;
+        left: -8px;
+        width: 3px;
+        border-radius: 3px;
+        z-index: 1;
+        font-size: 23px;
+    }
 }
 // 表格操作按钮分割线
 .el-table .cell .com-page-header-title {
@@ -406,7 +432,24 @@ ul,li {
         color: #333;
     }
 }
-
+/*/#/security/my-plans  预案详情 示例*/
+.com-dialog-info {
+    .item {
+        margin-bottom: 20px;
+        font-size: 14px;
+        position: relative;
+        padding-left: 75px;
+        .label {
+            color: #909090;
+            position: absolute;
+            left: 0;
+        }
+        .content {
+            min-height: 19px;
+            color: #333;
+        }
+    }
+}
 
 
 
@@ -584,7 +627,7 @@ body.security {
 
             }
             .com-header-right {
-                width: 255px;
+                // width: 255px;
                 margin-right: 15px;
                 .header-btn-bell, .header-btn-help {
                     margin-right: 20px;

@@ -53,16 +53,10 @@
                             label="上级部门"
                             prop="parentId"
                         >
-                            <el-select
-                                clearable
+                            <Dictionary
+                                :typeCode="3001"
                                 v-model="form.parentId"
-                                placeholder="请选择上级部门"
-                            >
-                                <el-option
-                                    label="物业部门"
-                                    value="01"
-                                ></el-option>
-                            </el-select>
+                            />
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -104,6 +98,7 @@
 </template>
 
 <script>
+import Dictionary from '@/components/common/select/Dictionary'
 export default {
     props: {
         updateForm: Object
@@ -140,6 +135,11 @@ export default {
     watch: {
         updateForm() {
             this.form = this.updateForm;
+        },
+        dialogVisible() {
+            if (this.dialogVisible == false) {
+                this.$parent.$refs.page.getList(this.$parent.$refs.page.pageIndex);
+            }
         }
     },
     methods: {
@@ -175,6 +175,9 @@ export default {
                 }
             });
         }
+    },
+    components: {
+        Dictionary,
     }
 };
 </script>

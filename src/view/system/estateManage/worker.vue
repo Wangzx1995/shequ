@@ -115,16 +115,22 @@
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="sex"
                         label="性别"
                         align="center"
                     >
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.sex==1">男</span>
+                            <span v-if="scope.row.sex==2">女</span>
+                        </template>
                     </el-table-column>
                     <el-table-column
                         prop="certificateType"
                         label="证件类型"
                         align="center"
                     >
+                        <template slot-scope="scope">
+                            <span>{{getItemName(scope.row.certificateType,certificateList, 'dicCode', 'dicName')}}</span>
+                        </template>
                     </el-table-column>
                     <el-table-column
                         prop="certificateNum"
@@ -189,456 +195,19 @@
                 />
             </div>
         </div>
-        <el-dialog
-            title="新增员工"
-            :visible.sync="dialogVisible.add"
-            width="800px"
-            :modal-append-to-body='false'
-            center
-        >
-            <el-form
-                :model="addForm"
-                :rules="rules"
-                ref="addForm"
-                label-width="100px"
-                class="demo-ruleForm dialog-form"
-                label-position="left"
-            >
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="员工姓名"
-                            prop="userName"
-                        >
-                            <el-input v-model="addForm.userName"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="所属部门"
-                            prop="deptCode"
-                        >
-                            <el-select
-                                clearable
-                                v-model="addForm.deptCode"
-                                placeholder="请选择所属部门"
-                            >
-                                <el-option
-                                    v-for="item in deptList"
-                                    :key="item.value"
-                                    :label="item.deptName"
-                                    :value="item.deptCode"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="性别"
-                            prop="sex"
-                        >
-                            <el-radio-group v-model="addForm.sex">
-                                <el-radio :label="1">男</el-radio>
-                                <el-radio :label="2">女</el-radio>
-                            </el-radio-group>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="职务"
-                            prop="dutyCode"
-                        >
-                            <el-select
-                                clearable
-                                v-model="addForm.dutyCode"
-                                placeholder="请选择职务"
-                            >
-                                <el-option
-                                    v-for="item in dutyList"
-                                    :key="item.value"
-                                    :label="item.dutyName"
-                                    :value="item.dutyCode"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="入职时间"
-                            prop="entryTime"
-                        >
-                            <el-date-picker
-                                v-model="addForm.entryTime"
-                                type="date"
-                                placeholder="选择日期"
-                                value-format="yyyy/MM/dd"
-                            >
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="证件类型"
-                            prop="certificateType"
-                        >
-                            <el-select
-                                clearable
-                                v-model="addForm.certificateType"
-                                placeholder="请选择证件类型"
-                            >
-                                <el-option
-                                    v-for="item in certificateList"
-                                    :key="item.value"
-                                    :label="item.dicName"
-                                    :value="item.dicCode"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="离职时间"
-                            prop="resignationTime"
-                        >
-                            <el-date-picker
-                                v-model="addForm.resignationTime"
-                                type="date"
-                                placeholder="选择日期"
-                                value-format="yyyy/MM/dd"
-                            >
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="证件号码"
-                            prop="certificateNum"
-                        >
-                            <el-input v-model="addForm.certificateNum"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="联系方式"
-                            prop="contactInfo"
-                        >
-                            <el-input v-model="addForm.contactInfo"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="证件有效期"
-                            prop="certificateTime"
-                        >
-                            <el-date-picker
-                                v-model="addForm.certificateTime"
-                                type="date"
-                                placeholder="选择日期"
-                                value-format="yyyy/MM/dd"
-                            >
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="证件照片"
-                            prop="certificateImg"
-                        >
-                            <imgUpload
-                                :imgSetting="upload"
-                                :getImgUrl="getImgUrl1"
-                                ref="imgUpload1"
-                            />
-                            <!-- :imgUrls="(addForm.certificateImg[0]&& addForm.certificateImg[0].split(',')) || []" -->
-
-                            <imgUpload
-                                :imgSetting="upload"
-                                :getImgUrl="getImgUrl2"
-                                ref="imgUpload2"
-                            />
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="采集照片"
-                            prop="gatherImg"
-                        >
-                            <imgUpload
-                                :imgSetting="upload"
-                                :getImgUrl="getImgUrl3"
-                                ref="imgUpload3"
-                            />
-
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="add()"
-                >保 存</el-button>
-                <el-button @click="dialogVisible.add = false">取 消</el-button>
-            </div>
-        </el-dialog>
-        <el-dialog
-            title="编辑员工"
-            :visible.sync="dialogVisible.update"
-            width="800px"
-            :modal-append-to-body='false'
-            center
-        >
-            <el-form
-                :model="updateForm"
-                :rules="rules"
-                ref="updateForm"
-                label-width="100px"
-                class="demo-ruleForm dialog-form"
-                label-position="left"
-            >
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="员工姓名"
-                            prop="userName"
-                        >
-                            <el-input v-model="updateForm.userName"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="所属部门"
-                            prop="deptCode"
-                        >
-                            <el-select
-                                clearable
-                                v-model="updateForm.deptCode"
-                                placeholder="请选择所属部门"
-                            >
-                                <el-option
-                                    v-for="item in deptList"
-                                    :key="item.value"
-                                    :label="item.deptName"
-                                    :value="item.deptCode"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="性别"
-                            prop="sex"
-                        >
-                            <el-radio-group v-model="updateForm.sex">
-                                <el-radio :label="1">男</el-radio>
-                                <el-radio :label="2">女</el-radio>
-                            </el-radio-group>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="职务"
-                            prop="dutyCode"
-                        >
-                            <el-select
-                                clearable
-                                v-model="updateForm.dutyCode"
-                                placeholder="请选择职务"
-                            >
-                                <el-option
-                                    v-for="item in dutyList"
-                                    :key="item.value"
-                                    :label="item.dutyName"
-                                    :value="item.dutyCode"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="入职时间"
-                            prop="entryTime"
-                        >
-                            <el-date-picker
-                                v-model="updateForm.entryTime"
-                                type="date"
-                                placeholder="选择日期"
-                                value-format="yyyy/MM/dd"
-                            >
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="证件类型"
-                            prop="certificateType"
-                        >
-                            <el-select
-                                clearable
-                                v-model="updateForm.certificateType"
-                                placeholder="请选择证件类型"
-                            >
-                                <el-option
-                                    v-for="item in certificateList"
-                                    :key="item.value"
-                                    :label="item.dicName"
-                                    :value="item.dicCode"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="离职时间"
-                            prop="resignationTime"
-                        >
-                            <el-date-picker
-                                v-model="updateForm.resignationTime"
-                                type="date"
-                                placeholder="选择日期"
-                                value-format="yyyy/MM/dd"
-                            >
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="证件号码"
-                            prop="certificateNum"
-                        >
-                            <el-input v-model="updateForm.certificateNum"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="联系方式"
-                            prop="contactInfo"
-                        >
-                            <el-input v-model="updateForm.contactInfo"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="证件有效期"
-                            prop="certificateTime"
-                        >
-                            <el-date-picker
-                                v-model="updateForm.certificateTime"
-                                type="date"
-                                placeholder="选择日期"
-                                value-format="yyyy/MM/dd"
-                            >
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="11">
-                        <el-form-item
-                            label="证件照片"
-                            prop="certificateImg"
-                        >
-                            <imgUpload
-                                :imgSetting="upload"
-                                :getImgUrl="getImgUrl1"
-                                ref="imgUpload1"
-                                :imgUrls="(updateForm.certificateImg&&[updateForm.certificateImg.split(',')[0]])||[]"
-                            />
-                            <!-- :imgUrls="(form.imgUrl && form.imgUrl.split(',')) || []" -->
-
-                            <imgUpload
-                                :imgSetting="upload"
-                                :getImgUrl="getImgUrl2"
-                                ref="imgUpload2"
-                                :imgUrls="(updateForm.certificateImg&&[updateForm.certificateImg.split(',')[1]])||[]"
-                            />
-                        </el-form-item>
-                    </el-col>
-                    <el-col
-                        :span="11"
-                        :offset="1"
-                    >
-                        <el-form-item
-                            label="采集照片"
-                            prop="gatherImg"
-                        >
-                            <imgUpload
-                                :imgSetting="upload"
-                                :getImgUrl="getImgUrl3"
-                                ref="imgUpload3"
-                            />
-
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="update()"
-                >保 存</el-button>
-                <el-button @click="dialogVisible.update = false">取 消</el-button>
-            </div>
-        </el-dialog>
+        <addDialog
+            :deptList="deptList"
+            :dutyList="dutyList"
+            :certificateList="certificateList"
+            ref="addDialog"
+        />
+        <updateDialog
+            :updateForm="updateForm"
+            :deptList="deptList"
+            :dutyList="dutyList"
+            :certificateList="certificateList"
+            ref="updateDialog"
+        />
     </div>
 </template>
 
@@ -646,6 +215,9 @@
 import ctrlPage from "@/components/common/other/CtrlPage";
 import imgUpload from "@/components/common/upload/imgUpload.vue";
 import { getItemName } from "@/filters/index.js";
+import addDialog from "@/components/system/estateManage/worker/addDialog";
+import updateDialog from "@/components/system/estateManage/worker/updateDialog";
+import DictionaryText from '@/components/common/select/DictionaryText'
 
 export default {
     name: "system-worker",
@@ -660,98 +232,8 @@ export default {
             dutyList: [],
             certificateList: [],
             list: [],
-            addForm: {
-                certificateImg: [],
-                certificateNum: '',
-                certificateTime: '',
-                certificateType: '',
-                contactInfo: '',
-                deptCode: '',
-                deptName: '',
-                dutyCode: '',
-                dutyName: '',
-                entryTime: '',
-                gatherImg: [],
-                resignationTime: '',
-                sex: 0,
-                userName: ''
-            },
-            cardImg: [],
             updateForm: {},
-            rules: {
-                userName: [
-                    {
-                        required: true,
-                        message: "请输入员工姓名",
-                        trigger: "blur"
-                    }
-                ],
-                deptCode: [
-                    {
-                        required: true,
-                        message: "请选择所属部门",
-                        trigger: "change"
-                    }
-                ],
-                sex: [
-                    {
-                        required: true,
-                        message: "请选择性别",
-                        trigger: "change"
-                    }
-                ],
-                dutyCode: [
-                    {
-                        required: true,
-                        message: "请选择职务",
-                        trigger: "change"
-                    }
-                ],
-                entryTime: [
-                    {
-                        required: true,
-                        message: "请选择入职时间",
-                        trigger: "change"
-                    }
-                ],
-                certificateType: [
-                    {
-                        required: true,
-                        message: "请选择证件类型",
-                        trigger: "change"
-                    }
-                ],
-                certificateNum: [
-                    {
-                        required: true,
-                        message: "请输入证件号码",
-                        trigger: "blur"
-                    }
-                ],
-                contactInfo: [
-                    {
-                        required: true,
-                        message: "请输入联系方式",
-                        trigger: "blur"
-                    }
-                ],
-                certificateImg: [
-                    {
-                        required: true,
-                        message: '请上传图片',
-                        trigger: "change"
-                    }
-                ]
-            },
-            dialogVisible: {
-                add: false,
-                update: false
-            },
             deleteList: [],
-            upload: {
-                limit: 1,
-                isShow: true
-            }
         };
     },
     mounted() {
@@ -881,89 +363,22 @@ export default {
                     });
                 });
         },
-        //新增操作
-        add() {
-            this.$refs.addForm.validate(valid => {
-                if (valid) {
-                    this.addForm.deptName = this.getItemName(this.addForm.deptCode, this.deptList, 'deptCode', 'deptName')
-                    this.addForm.dutyName = this.getItemName(this.addForm.dutyCode, this.dutyList, 'dutyCode', 'dutyName')
-                    this.addForm.certificateImg = this.addForm.certificateImg.join(',')
-                    this.addForm.gatherImg = this.addForm.gatherImg.join(',')
-                    this.$systemApi.estateManage.staffCreate(this.addForm)
-                        .then(res => {
-                            if (res.code == 1000) {
-                                this.dialogVisible.add = false
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'success'
-                                })
-                                this.$refs.page.getList(1);
-                                this.$refs.imgUpload1.clearFileList();
-                                this.$refs.imgUpload2.clearFileList();
-                                this.$refs.imgUpload3.clearFileList();
-                            } else {
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'error'
-                                })
-                            }
-                        })
-                }
-            });
-        },
         //打开编辑窗口
         openUpdateDialog(form) {
             this.updateForm = form;
-            this.dialogVisible.update = true
-
+            this.$refs.updateDialog.showDialog()
         },
         //打开新增窗口
         openAddDialog() {
-            this.dialogVisible.add = true
-            this.$nextTick(() => {
-                this.$refs['addForm'].resetFields();
-            })
+            this.$refs.addDialog.showDialog();
         },
-        //修改职务
-        update() {
-            this.$refs.updateForm.validate(valid => {
-                if (valid) {
-                    this.updateForm.deptName = this.getItemName(this.updateForm.deptCode, this.deptList, 'deptCode', 'deptName')
-                    this.updateForm.dutyName = this.getItemName(this.updateForm.dutyCode, this.dutyList, 'dutyCode', 'dutyName')
-                    this.$systemApi.estateManage.staffUpdate(this.updateForm)
-                        .then(res => {
-                            if (res.code == 1000) {
-                                this.dialogVisible.update = false
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'success'
-                                })
-                                this.$refs.page.getList(1);
-                            } else {
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'error'
-                                })
-                            }
-                        })
-                }
-            });
-        },
-        //获取图片
-        getImgUrl1(data) {
-            this.addForm.certificateImg[0] = data
-        },
-        getImgUrl2(data) {
-            this.addForm.certificateImg[1] = data
-        },
-        getImgUrl3(data) {
-            this.addForm.gatherImg[0] = data
-        },
-
     },
     components: {
         ctrlPage,
-        imgUpload
+        imgUpload,
+        addDialog,
+        updateDialog,
+        DictionaryText,
     }
 };
 </script>

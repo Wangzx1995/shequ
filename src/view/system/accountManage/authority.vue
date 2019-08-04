@@ -14,7 +14,10 @@
                     ></el-input>
                 </el-form-item>
                 <el-form-item style="float:right">
-                    <el-button type="primary">查询<i class="icon-x-sousuo el-icon--right"></i></el-button>
+                    <el-button
+                        type="primary"
+                        @click="$refs.page.getList(1)"
+                    >查询<i class="icon-x-sousuo el-icon--right"></i></el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -114,142 +117,23 @@
                 />
             </div>
         </div>
-        <el-dialog
-            title="新增角色权限"
-            :visible.sync="dialogVisible.add"
-            width="400px"
-            :modal-append-to-body='false'
-            center
-        >
-            <el-form
-                :model="addForm"
-                :rules="rules"
-                ref="addForm"
-                label-width="100px"
-                class="demo-ruleForm dialog-form"
-                label-position="left"
-            >
-                <el-row>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="角色编号"
-                            prop="roleCode"
-                        >
-                            <el-input v-model="addForm.roleCode"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="角色名称"
-                            prop="roleName"
-                        >
-                            <el-input v-model="addForm.roleName"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="排序"
-                            prop="sort"
-                        >
-                            <el-input v-model="addForm.sort"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="add()"
-                >保 存</el-button>
-                <el-button @click="dialogVisible.add = false">取 消</el-button>
-            </div>
-        </el-dialog>
-        <el-dialog
-            title="新增角色权限"
-            :visible.sync="dialogVisible.update"
-            width="400px"
-            :modal-append-to-body='false'
-            center
-        >
-            <el-form
-                :model="updateForm"
-                :rules="rules"
-                ref="updateForm"
-                label-width="100px"
-                class="demo-ruleForm dialog-form"
-                label-position="left"
-            >
-                <el-row>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="角色编号"
-                            prop="roleCode"
-                        >
-                            <el-input v-model="updateForm.roleCode"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="角色名称"
-                            prop="roleName"
-                        >
-                            <el-input v-model="updateForm.roleName"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="排序"
-                            prop="sort"
-                        >
-                            <el-input v-model="updateForm.sort"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="update()"
-                >保 存</el-button>
-                <el-button @click="dialogVisible.update = false">取 消</el-button>
-            </div>
-        </el-dialog>
-        <el-dialog
-            title="权限配置"
-            :visible.sync="dialogVisible.tree"
-            :modal-append-to-body='false'
-            center
-            width="500px"
-        >
-            <div>
-                <tree ref="myTree" />
-            </div>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="distribution()"
-                >保 存</el-button>
-                <el-button @click="dialogVisible.tree = false">取 消</el-button>
-            </div>
-        </el-dialog>
+        <addDialog ref="addDialog" />
+        <updateDialog
+            ref="updateDialog"
+            :updateForm="updateForm"
+        />
+        <roleDialog
+            :updateForm="updateForm"
+            ref="roleDialog"
+        />
     </div>
 </template>
 
 <script>
 import ctrlPage from "@/components/common/other/CtrlPage";
-import tree from "@/components/common/tree/tree";
+import addDialog from "@/components/system/accountManage/authority/addDialog";
+import updateDialog from "@/components/system/accountManage/authority/updateDialog";
+import roleDialog from "@/components/system/accountManage/authority/roleDialog";
 
 export default {
     name: "system-authority",
@@ -260,33 +144,7 @@ export default {
                 search: ""
             },
             list: [],
-            addForm: {
-                roleCode: "",
-                roleName: "",
-                sort: ""
-            },
-            updateForm: [],
-            rules: {
-                roleCode: [
-                    {
-                        required: true,
-                        message: "请输入角色编号",
-                        trigger: "blur"
-                    }
-                ],
-                roleName: [
-                    {
-                        required: true,
-                        message: "请输入角色名称",
-                        trigger: "blur"
-                    }
-                ]
-            },
-            dialogVisible: {
-                add: false,
-                update: false,
-                tree: false
-            },
+            updateForm: {},
             deleteList: []
         };
     },
@@ -304,19 +162,16 @@ export default {
         //打开编辑窗口
         openUpdateDialog(form) {
             this.updateForm = form;
-            this.dialogVisible.update = true
+            this.$refs.updateDialog.showDialog();
         },
         //打开新增窗口
         openAddDialog() {
-            this.dialogVisible.add = true
-            this.$nextTick(() => {
-                this.$refs['addForm'].resetFields();
-            })
+            this.$refs.addDialog.showDialog();
         },
         //打开权限窗口
         openDistribution(form) {
             this.updateForm = form;
-            this.dialogVisible.tree = true
+            this.$refs.roleDialog.showDialog();
         },
         //查询/获取List
         getList(pageIndex, rows, callback) {
@@ -335,29 +190,6 @@ export default {
                     })
                 }
             })
-        },
-        //新增操作
-        add() {
-            this.$refs.addForm.validate(valid => {
-                if (valid) {
-                    this.$systemApi.accountManage.roleCreate(this.addForm)
-                        .then(res => {
-                            if (res.code == 1000) {
-                                this.dialogVisible.add = false
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'success'
-                                })
-                                this.$refs.page.getList(1);
-                            } else {
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'error'
-                                })
-                            }
-                        })
-                }
-            });
         },
         //删除操作
         del(id) {
@@ -399,57 +231,13 @@ export default {
                     });
                 });
         },
-        //修改操作
-        update() {
-            this.$refs.updateForm.validate(valid => {
-                if (valid) {
-                    this.$systemApi.accountManage.roleUpdate(this.updateForm)
-                        .then(res => {
-                            if (res.code == 1000) {
-                                this.dialogVisible.update = false
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'success'
-                                })
-                                this.$refs.page.getList(1);
-                            } else {
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'error'
-                                })
-                            }
-                        })
-                }
-            });
-        },
-        //分配权限
-        distribution() {
-            this.updateForm.accessConfig = this.$refs.myTree.getKeys()
-            // console.log(this.$refs.myTree.getKeys())
-            // console.log(typeof (this.$refs.myTree.getKeys()))
-            this.$systemApi.accountManage.roleUpdate(this.updateForm)
-                .then(res => {
-                    if (res.code == 1000) {
-                        this.dialogVisible.tree = false
-                        this.$$message({
-                            message: res.message,
-                            type: 'success'
-                        })
-                        this.$refs.page.getList(1);
-                    } else {
-                        this.$$message({
-                            message: res.message,
-                            type: 'error'
-                        })
-                    }
-                })
-        }
-        //-------------------------------------------------------------------------------
 
     },
     components: {
         ctrlPage,
-        tree
+        addDialog,
+        updateDialog,
+        roleDialog
     }
 };
 </script>

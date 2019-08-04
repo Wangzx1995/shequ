@@ -6,62 +6,56 @@
                 :model="selectForm"
                 class="demo-form-inline"
                 label-position="left"
+                ref="selectForm"
             >
                 <el-form-item label="投诉建议">
-                    <el-select
-                        clearable
-                        v-model="selectForm.user"
-                        placeholder="请选择投诉建议"
-                    >
-                        <el-option
-                            label="投诉建议一"
-                            value="shanghai"
-                        ></el-option>
-                        <el-option
-                            label="投诉建议二"
-                            value="beijing"
-                        ></el-option>
-                    </el-select>
+                    <Dictionary
+                        :typeCode="1021"
+                        v-model="selectForm.felectType"
+                    />
                 </el-form-item>
                 <el-form-item label="处理状态">
                     <el-select
                         clearable
-                        v-model="selectForm.user"
+                        v-model="selectForm.status"
                         placeholder="请选择处理状态"
                     >
                         <el-option
-                            label="处理状态一"
-                            value="shanghai"
+                            v-for="item in statusList"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
                         ></el-option>
-                        <el-option
-                            label="处理状态二"
-                            value="beijing"
-                        ></el-option>
+
                     </el-select>
                 </el-form-item>
                 <el-form-item label="关键词">
                     <el-input
-                        v-model="selectForm.user"
+                        v-model="selectForm.search"
                         placeholder="关键词"
                     ></el-input>
                 </el-form-item>
                 <el-form-item label="反映时间">
                     <el-date-picker
-                        v-model="selectForm.user"
+                        v-model="selectForm.felectTime"
                         type="date"
                         placeholder="选择日期"
+                        value-format="yyyy/MM/dd"
                     >
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item>
-                    <el-button type="primary">查询<i class="icon-x-sousuo el-icon--right"></i></el-button>
+                <el-form-item style="float:right">
+                    <el-button
+                        type="primary"
+                        @click="$refs.page.getList(1)"
+                    >查询<i class="icon-x-sousuo el-icon--right"></i></el-button>
                 </el-form-item>
             </el-form>
         </div>
         <br>
         <div class="com-page-header-wrap clear com-main-inner">
             <div class="com-main-inner-title">
-                <span class="com-page-header-title">投诉建议列表（弹窗没出图。没做）</span>
+                <span class="com-page-header-title">投诉建议列表</span>
             </div>
             <div class="com-main-inner-table">
                 <el-table
@@ -211,15 +205,29 @@
 
 <script>
 import ctrlPage from "@/components/common/other/CtrlPage";
+import Dictionary from "@/components/common/select/Dictionary";
 
 export default {
     name: "property-propertyButler-suggestions",
     data() {
         return {
             selectForm: {
-                user: ""
+                felectType: null,
+                status: null,
+                search: null,
+                felectTime: null
             },
             list: [],
+            statusList: [
+                {
+                    label: "待处理",
+                    value: 1
+                },
+                {
+                    label: "已处理",
+                    value: 2
+                }
+            ],
             form: {
                 num: "",
                 name: ""
@@ -242,27 +250,40 @@ export default {
                     }
                 ]
             },
-            dialogVisible: false,
+            dialogVisible: false
         };
     },
     mounted() {
         this.$refs.page.getList(1);
     },
     methods: {
+        //查询/获取List
         getList(pageIndex, rows, callback) {
-            if (!this.list.length) {
-                for (let i = 1; i <= 11; i++) {
-                    this.list.push({
-                        num: "c" + i,
-                        name: "行政部"
-                    });
-                }
-            }
-            callback(this.list, 12);
+            this.$propertyApi.propertyButler.suggestions
+                .list({
+                    pageNum: pageIndex,
+                    pageSize: rows,
+                    felectType: this.selectForm.felectType,
+                    status: this.selectForm.status,
+                    search: this.selectForm.search,
+                    felectTime: this.selectForm.felectTime
+                })
+                .then(res => {
+                    if (res.code == 1000) {
+                        this.list = res.data.list;
+                        callback(this.list, res.data.total);
+                    } else {
+                        this.$$alert({
+                            message: res.msg,
+                            type: "error"
+                        });
+                    }
+                });
         }
     },
     components: {
-        ctrlPage
+        ctrlPage,
+        Dictionary
     }
 };
 </script>

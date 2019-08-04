@@ -13,90 +13,145 @@
             <el-tab-pane label="快捷播放">
                 <el-tree
                     class="count"
-                    :data="data1"
-                    show-checkbox
-                    node-key="id"
-                    :props="defaultProps"
+                    :data="treeList"
+                    :props="treeProps"
                 >
                     <span class="custom-between-node" slot-scope="{ node, data }">
-                        <template v-if="data.label.indexOf('一级') != -1">
-                            <span :class="(node.checked && node.isLeaf) ? 'color' : ''">{{ node.label }}</span>
-                            <span>
-                                <el-link type="primary" style="color:#1779ec" :underline="false">播放</el-link>&nbsp;&nbsp;
-                                <el-link type="primary" :underline="false">编辑</el-link>&nbsp;&nbsp;
-                                <el-link type="danger" :underline="false">删除</el-link>
+                        <template v-if="!data.leaf">
+                            <span class="label" :class="(node.checked && node.isLeaf) ? 'color' : ''">{{ node.label }}</span>
+                            <span class="ic">
+                                <el-link type="primary" style="color:#1779ec" :underline="false" v-if="data.children.length" @click="addAllPlay(data, $event)">播放</el-link>&nbsp;&nbsp;
+                                <el-link type="primary" :underline="false" @click="openAddDlg(data, $event)">编辑</el-link>&nbsp;&nbsp;
+                                <el-link type="danger" :underline="false" @click="del(data, $event)">删除</el-link>
                             </span>
                         </template>
                         <template v-else>
-                            <span :class="(node.checked && node.isLeaf) ? 'color' : ''">{{ node.label }}</span>
-                            <span>
-                                <i class="icon-x-shoucang off"></i>
-                                <!-- <i class="icon-x-shoucang1 on"></i> -->
+                            <span class="label" :class="(node.checked && node.isLeaf) ? 'color' : ''" @click="addPlay(data)">{{ node.label }}</span>
+                            <span class="ic">
+                                <i class="icon-x-shoucang1 on" v-if="$parent.getCollectStatus(node)" @click="toggleCollect(data, $event)"></i>
+                                <i class="icon-x-shoucang off" v-else @click="toggleCollect(data, $event, 1)"></i>
                             </span>
                         </template>
                     </span>
                 </el-tree>
             </el-tab-pane>
         </el-tabs>
+        <AddQuick ref="dlgAddQuick"/>
     </div>
 </template>
 
 <script>
+    import AddQuick from '@/components/security/video/DlgAddQuick'
+    import bus from '@/components/bus'
     export default {
         props: {
             tabIndex: String
         },
         data () {
             return {
-                
-                data1: [{
-                    id: 1,
-                    label: '一级 1',
-                    children: [{
-                        id: 4,
-                        label: '二级 1-1',
-                        children: [{
-                        id: 9,
-                        label: '三级 1-1-1'
-                        }, {
-                        id: 10,
-                        label: '三级 1-1-2'
-                        }]
-                    }]
-                    }, {
-                    id: 2,
-                    label: '一级 2',
-                    children: [{
-                        id: 5,
-                        label: '二级 2-1'
-                    }, {
-                        id: 6,
-                        label: '二级 2-2'
-                    }]
-                    }, {
-                    id: 3,
-                    label: '一级 3',
-                    children: [{
-                        id: 7,
-                        label: '二级 3-1'
-                    }, {
-                        id: 8,
-                        label: '二级 3-2'
-                    }]
-                }],
-                    defaultProps: {
+                treeList: [],
+                treeProps: {
                     children: 'children',
-                    label: 'label'
+                    label: 'label',
+                    isLeaf: 'leaf'
                 }
             }
         },
+        mounted () {
+            this.findQuickList()
+
+            bus.$on('updateVideoQuickList', this.findQuickList)
+        },
         methods: {
+            // 播放全部
+            addAllPlay (data, $event) {
+                $event.stopPropagation()
+                console.log(data)
+                data.children.forEach(v => {
+                    this.$parent.addPlay(v.__data)
+                })
+            },
+            // 加入播放
+            addPlay (data) {
+                this.$parent.addPlay(data.__data)
+            },
+            // 添加/取消收藏
+            toggleCollect (data, $event, type) {
+                $event.stopPropagation()
+                // 添加收藏
+                if (type == 1) {
+                    this.$parent.addCollect([data.id])
+                } else {
+                    // 取消收藏
+                    this.$parent.cancelCollect([data.id])
+                }
+            },
+            // 删除快捷播放
+            del (data, e) {
+                e.stopPropagation()
+                this.$$confirm({
+                    message: '确认删除？'
+                }).then(() => {
+                    this.$securityApi.video.delQuick({
+                        ids: [data.id]
+                    }).then(res => {
+                        if (res.code == 1000) {
+                            this.$$notify({
+                                message: '删除成功'
+                            })
+                            this.findQuickList()
+                        } else {
+                            this.$$message({
+                                message: res.message
+                            })
+                        }
+                    })
+                }).catch(() => {})
+            },
+            // 添加添加窗口
+            openAddDlg (data, e) {
+                e.stopPropagation()
+                this.$refs.dlgAddQuick.open(() => {
+                    this.findQuickList()
+                }, data)
+            },
+            // 查询快捷播放列表
+            findQuickList () {
+                
+                this.$securityApi.video.findQuickList().then(res => {
+                    if (res.code == 1000) {
+                        this.treeList = []
+                        res.data.forEach(v => {
+                            
+                            let children = []
+                            v.favoriteQuicks.forEach(c => {
+                                children.push({
+                                    id: c.equipMonitorVo.id,
+                                    label: c.equipMonitorVo.name,
+                                    leaf: true,
+                                    __data: c.equipMonitorVo
+                                })
+                            })
+
+                            this.treeList.push({
+                                id: v.id,
+                                label: v.playTitle,
+                                children
+                            })
+                        })
+                    } else {
+                        this.$$message({
+                            message: res.message
+                        })
+                    }
+                })
+            },
             handleTab (tab) {
                 (this.tabIndex != tab.index) && this.$emit('handleTab', tab.index)
             }
         },
         components: {
-            
+            AddQuick
         }
     }
 </script>

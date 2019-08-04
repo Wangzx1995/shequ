@@ -26,9 +26,9 @@
             </div>
             <div
                 class="img1 clearfix"
-                :class="imgSetting.limit>1 ? 'ismargin' : 'nomargin' "
+                :class="[imgSetting.limit>1? 'ismargin' : 'nomargin']"
                 v-for="(urls, index) in fileList "
-                :key="urls.value"
+                :key="urls"
             >
                 <div
                     class="delete clearfix"
@@ -67,16 +67,17 @@ export default {
             isImg: true
         };
     },
-    mounted() {
-        this.fileList = this.imgUrls
-        /*this.fileList = this.imgUrls.filter(url => {
-            return !!url
-        })*/
-    },
     watch: {
-        'fileList'() {
-            // this.$emit('getImgUrl', this.fileList.join(','))
+        imgUrls() {
+            this.fileList = this.imgUrls.filter((item) => {
+                return item != '';
+            });
         }
+    },
+    mounted() {
+        this.fileList = this.imgUrls.filter((item) => {
+            return item != '';
+        });
     },
     methods: {
         //删除图片
@@ -87,7 +88,6 @@ export default {
                 type: "success"
             });
             this.getImgUrl(this.fileList.join(','))
-
         },
         //图片上传
         readLocalFile(e) {
@@ -113,15 +113,16 @@ export default {
             //上传
             var formData = new FormData();
             formData.append("file", this.files[this.files.length - 1]);
-            // console.log(formData.get("file"))
-            // this.$propertyApi.upload.upload(formData)
-            this.$systemApi.upload.upload(formData)
+            // this.$systemApi.upload.upload(formData)
+            // this.$baseApi.upload(formData)
+            this.$propertyApi.upload.upload(formData)
                 .then(res => {
                     if (res.code == 1000) {
                         this.$$message({
                             message: "图片上传成功！",
                             type: "success"
                         });
+                        console.log(this.fileList)
                         this.fileList.push(res.data[0].fileUrl);
                         this.getImgUrl(this.fileList.join(','))
                     }
@@ -163,6 +164,7 @@ export default {
             border: none;
             display: block;
             height: 120px;
+            max-width: 240px;
         }
     }
     .addimg {
@@ -174,6 +176,7 @@ export default {
         padding: 0;
         background: #fbfdff;
         position: relative;
+        margin-bottom: 25px;
         .uploadFile {
             position: absolute;
             left: 0;

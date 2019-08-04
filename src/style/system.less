@@ -1,5 +1,8 @@
 .system {
-
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
     //通用样式
     input {
         border: 1px solid #e7eaec;
@@ -34,7 +37,7 @@
         .el-form-item {
             &:last-child {
                 float: right;
-                margin-right: 0
+                margin-right: 0;
             }
         }
     }
@@ -50,7 +53,7 @@
         }
 
         .com-main-inner-table {
-            .el-table--enable-row-hover .el-table__body tr:hover>td {
+            .el-table--enable-row-hover .el-table__body tr:hover > td {
                 background-color: #4390f0 !important;
                 color: #ffffff !important;
 

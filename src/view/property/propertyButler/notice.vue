@@ -6,39 +6,34 @@
                 :model="selectForm"
                 class="demo-form-inline"
                 label-position="left"
+                ref="selectForm"
             >
                 <el-form-item label="关键词">
                     <el-input
-                        v-model="selectForm.user"
+                        v-model="selectForm.search"
                         placeholder="关键词"
                     ></el-input>
                 </el-form-item>
                 <el-form-item label="发布时间">
                     <el-date-picker
-                        v-model="selectForm.user"
+                        v-model="selectForm.issuetime"
                         type="date"
                         placeholder="选择日期"
+                        value-format="yyyy/MM/dd"
                     >
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item label="通知类型">
-                    <el-select
-                        clearable
-                        v-model="selectForm.user"
-                        placeholder="请选择通知类型"
-                    >
-                        <el-option
-                            label="通知类型一"
-                            value="shanghai"
-                        ></el-option>
-                        <el-option
-                            label="通知类型二"
-                            value="beijing"
-                        ></el-option>
-                    </el-select>
+                    <Dictionary
+                        :typeCode="1020"
+                        v-model="selectForm.informType"
+                    />
                 </el-form-item>
-                <el-form-item>
-                    <el-button type="primary">查询<i class="icon-x-sousuo el-icon--right"></i></el-button>
+                <el-form-item style="float:right">
+                    <el-button
+                        type="primary"
+                        @click="$refs.page.getList(1)"
+                    >查询<i class="icon-x-sousuo el-icon--right"></i></el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -51,12 +46,13 @@
                             type="primary"
                             plain
                             size="mini"
-                            @click="dialogVisible=true"
+                            @click="openAddDialog()"
                         >发布</el-button>
                         <el-button
                             type="danger"
                             plain
                             size="mini"
+                            @click="del(deleteList)"
                         >批量删除</el-button>
                     </template>
                 </div>
@@ -86,20 +82,38 @@
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
-                        label="二级分类"
+                        prop="type"
+                        label="通知类型"
+                        align="center"
+                    >
+                        <template slot-scope="scope">
+                            <DictionaryText
+                                :typeCode="1020"
+                                :dicCode="scope.row.type"
+                            />
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        prop="title"
+                        label="标题"
                         align="center"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="name"
-                        label="一级分类"
+                        prop="content"
+                        label="通知内容"
                         align="center"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="name"
-                        label="创建时间"
+                        prop="issuer"
+                        label="发布人"
+                        align="center"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                        prop="issuetime"
+                        label="发布时间"
                         align="center"
                     >
                     </el-table-column>
@@ -111,12 +125,12 @@
                         <template slot-scope="scope">
                             <el-button
                                 type="primary"
-                                @click="dialogVisible2=true"
+                                @click="openDetailDialog(scope.row.id)"
                             >查看</el-button>
                             <span class="com-page-header-title line"></span>
                             <el-button
                                 type="danger"
-                                @click="del(scope.row)"
+                                @click="del(scope.row.id)"
                             >删除</el-button>
                         </template>
                     </el-table-column>
@@ -128,181 +142,127 @@
                 />
             </div>
         </div>
-
-        <!-- 发布 -->
-        <el-dialog
-            title="发布通知"
-            :visible.sync="dialogVisible"
-            width="800px"
-            :modal-append-to-body='false'
-            center
-        >
-            <el-form
-                :model="form"
-                :rules="rules"
-                ref="ruleForm"
-                label-width="100px"
-                class="demo-ruleForm dialog-form"
-                label-position="left"
-            >
-                <el-row>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="标题"
-                            prop="num"
-                        >
-                            <el-input
-                                v-model="form.name"
-                                class="longInput"
-                            ></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="通知类型"
-                            prop="region"
-                        >
-                            <el-select
-                                clearable
-                                v-model="form.name"
-                                placeholder="请选择通知类型"
-                            >
-                                <el-option
-                                    label="区域一"
-                                    value="shanghai"
-                                ></el-option>
-                                <el-option
-                                    label="区域二"
-                                    value="beijing"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="通知内容"
-                            prop="num"
-                        >
-                            <UeEditor />
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="dialogVisible = false"
-                >保 存</el-button>
-                <el-button @click="dialogVisible = false">取 消</el-button>
-            </div>
-        </el-dialog>
-
-        <!-- 查看 -->
-        <el-dialog
-            title="查看"
-            :visible.sync="dialogVisible2"
-            width="800px"
-            :modal-append-to-body='false'
-            center
-        >
-            <div class="notice">
-                <h2>停电通告</h2>
-                <div style="border: 1px solid #e7eaec;padding:20px 50px">
-                    各位业主！
-                    收到街道通知，本小区将于2019年2月5号中午12点到18点停电，望大家相互传达，给您带来不便请见谅。
-                    <br />
-                    <br />
-                    <br />
-                    <p>绿城物业公司</p>
-                    <p>2019-01-01</p>
-                </div>
-            </div>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="dialogVisible2 = false"
-                >保 存</el-button>
-                <el-button @click="dialogVisible2 = false">取 消</el-button>
-            </div>
-        </el-dialog>
+        <addDialog ref="addDialog" />
+        <detailDialog ref="detailDialog" />
     </div>
 </template>
 
 <script>
 import ctrlPage from "@/components/common/other/CtrlPage";
 import UeEditor from "@/components/common/other/UeEditor";
+import Dictionary from "@/components/common/select/Dictionary";
+import DictionaryText from "@/components/common/select/DictionaryText";
 
+import addDialog from "@/components/property/propertyButler/notice/addDialog";
+import detailDialog from "@/components/property/propertyButler/notice/detailDialog";
 export default {
     name: "property-propertyButler-notice",
     data() {
         return {
             selectForm: {
-                user: ""
+                search: null,
+                issuetime: null,
+                informType: null
             },
             list: [],
-            form: {
-                num: "",
-                name: ""
-            },
-            rules: {
-                num: [
-                    {
-                        type: "date",
-                        required: true,
-                        message: "请输入部门编码",
-                        trigger: "blur"
-                    }
-                ],
-                name: [
-                    {
-                        type: "date",
-                        required: true,
-                        message: "请输入部门简称",
-                        trigger: "blur"
-                    }
-                ]
-            },
-            dialogVisible: false,
-            dialogVisible2: false,
+            deleteList: []
         };
     },
     mounted() {
         this.$refs.page.getList(1);
     },
     methods: {
+        //多选框
         handleSelectionChange(val) {
-            this.multipleSelection = val;
-        },
-        getList(pageIndex, rows, callback) {
-            if (!this.list.length) {
-                for (let i = 1; i <= 11; i++) {
-                    this.list.push({
-                        num: "c" + i,
-                        name: "行政部"
-                    });
-                }
+            this.deleteList = [];
+            for (let i in val) {
+                this.deleteList.push(val[i].id);
             }
-            callback(this.list, 12);
         },
-        del() {
+        //打开新增窗口
+        openAddDialog() {
+            this.$refs.addDialog.showDialog();
+        },
+        //打开查看窗口
+        openDetailDialog(id) {
+            this.$refs.detailDialog.showDialog(id);
+        },
+        //查询/获取List
+        getList(pageIndex, rows, callback) {
+            this.$propertyApi.propertyButler.notice
+                .list({
+                    pageNum: pageIndex,
+                    pageSize: rows,
+                    informType: this.selectForm.informType,
+                    issuetime: this.selectForm.issuetime,
+                    search: this.selectForm.search
+                })
+                .then(res => {
+                    if (res.code == 1000) {
+                        this.list = res.data.list;
+                        callback(this.list, res.data.total);
+                    } else {
+                        this.$$alert({
+                            message: res.msg,
+                            type: "error"
+                        });
+                    }
+                });
+        },
+        //删除操作
+        del(id) {
+            if (id.length == 0) {
+                this.$$message({
+                    message: "请选择批量删除对象",
+                    type: "warning"
+                });
+                return;
+            }
             this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
                 type: "warning"
             })
                 .then(() => {
-                    this.$message({
-                        type: "success",
-                        message: "删除成功!"
-                    });
+                    if (Array.isArray(id)) {
+                        this.$propertyApi.propertyButler.notice
+                            .deleteList({
+                                ids: id
+                            })
+                            .then(res => {
+                                if (res.code == 1000) {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "success"
+                                    });
+                                    this.$refs.page.getList(1);
+                                } else {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "error"
+                                    });
+                                }
+                            });
+                    } else {
+                        this.$propertyApi.propertyButler.notice
+                            .delete({
+                                id: id
+                            })
+                            .then(res => {
+                                if (res.code == 1000) {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "success"
+                                    });
+                                    this.$refs.page.getList(1);
+                                } else {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "error"
+                                    });
+                                }
+                            });
+                    }
                 })
                 .catch(() => {
                     this.$message({
@@ -313,7 +273,12 @@ export default {
         }
     },
     components: {
-        ctrlPage, UeEditor
+        ctrlPage,
+        UeEditor,
+        Dictionary,
+        DictionaryText,
+        addDialog,
+        detailDialog
     }
 };
 </script>

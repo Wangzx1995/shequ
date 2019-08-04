@@ -6,33 +6,25 @@
                 :model="selectForm"
                 class="demo-form-inline"
                 label-position="left"
+                ref="selectForm"
             >
-
                 <el-form-item label="关键词">
                     <el-input
-                        v-model="selectForm.user"
+                        v-model="selectForm.search"
                         placeholder="关键词"
                     ></el-input>
                 </el-form-item>
-
                 <el-form-item label="一级分类">
-                    <el-select
-                        clearable
-                        v-model="selectForm.user"
-                        placeholder="请选择一级分类"
-                    >
-                        <el-option
-                            label="一级分类一"
-                            value="shanghai"
-                        ></el-option>
-                        <el-option
-                            label="一级分类二"
-                            value="beijing"
-                        ></el-option>
-                    </el-select>
+                    <Dictionary
+                        :typeCode="1022"
+                        v-model="selectForm.grade"
+                    />
                 </el-form-item>
                 <el-form-item style="float:right">
-                    <el-button type="primary">查询<i class="icon-x-sousuo el-icon--right"></i></el-button>
+                    <el-button
+                        type="primary"
+                        @click="$refs.page.getList(1)"
+                    >查询<i class="icon-x-sousuo el-icon--right"></i></el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -45,12 +37,13 @@
                             type="primary"
                             plain
                             size="mini"
-                            @click="dialogVisible=true"
+                            @click="openAddDialog()"
                         >新增</el-button>
                         <el-button
                             type="danger"
                             plain
                             size="mini"
+                            @click="del(deleteList)"
                         >批量删除</el-button>
                     </template>
                 </div>
@@ -80,19 +73,19 @@
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
+                        prop="name"
                         label="二级分类"
                         align="center"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="name"
+                        prop="gradeName"
                         label="一级分类"
                         align="center"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="name"
+                        prop="issuetime"
                         label="创建时间"
                         align="center"
                     >
@@ -103,11 +96,14 @@
                         align="center"
                     >
                         <template slot-scope="scope">
-                            <el-button type="primary">编辑</el-button>
+                            <el-button
+                                type="primary"
+                                @click="openUpdateDialog(scope.row.id)"
+                            >编辑</el-button>
                             <span class="com-page-header-title line"></span>
                             <el-button
                                 type="danger"
-                                @click="del(scope.row)"
+                                @click="del(scope.row.id)"
                             >删除</el-button>
                         </template>
                     </el-table-column>
@@ -119,133 +115,123 @@
                 />
             </div>
         </div>
-        <el-dialog
-            title="新增物资分类"
-            :visible.sync="dialogVisible"
-            width="400px"
-            :modal-append-to-body='false'
-            center
-        >
-            <el-form
-                :model="form"
-                :rules="rules"
-                ref="ruleForm"
-                label-width="100px"
-                class="demo-ruleForm dialog-form"
-                label-position="left"
-            >
-                <el-row>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="分类名称"
-                            prop="num"
-                        >
-                            <el-input v-model="form.name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="一级分类"
-                            prop="region"
-                        >
-                            <el-select
-                                clearable
-                                v-model="form.name"
-                                placeholder="请选择一级分类"
-                            >
-                                <el-option
-                                    label="区域一"
-                                    value="shanghai"
-                                ></el-option>
-                                <el-option
-                                    label="区域二"
-                                    value="beijing"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="dialogVisible = false"
-                >保 存</el-button>
-                <el-button @click="dialogVisible = false">取 消</el-button>
-            </div>
-        </el-dialog>
+        <addDialog ref="addDialog" />
+        <updateDialog ref="updateDialog" />
     </div>
 </template>
 
 <script>
 import ctrlPage from "@/components/common/other/CtrlPage";
+import Dictionary from "@/components/common/select/Dictionary";
 
+import addDialog from "@/components/property/resourceManagement/classification/addDialog";
+import updateDialog from "@/components/property/resourceManagement/classification/updateDialog";
 export default {
     name: "property-resourceManagement-classification",
     data() {
         return {
             selectForm: {
-                user: ""
+                search: null,
+                grade: null
             },
             list: [],
-            form: {
-                num: "",
-                name: ""
-            },
-            rules: {
-                num: [
-                    {
-                        type: "date",
-                        required: true,
-                        message: "请输入部门编码",
-                        trigger: "blur"
-                    }
-                ],
-                name: [
-                    {
-                        type: "date",
-                        required: true,
-                        message: "请输入部门简称",
-                        trigger: "blur"
-                    }
-                ]
-            },
-            dialogVisible: false
+            deleteList: []
         };
     },
     mounted() {
         this.$refs.page.getList(1);
     },
     methods: {
+        //多选框
         handleSelectionChange(val) {
-            this.multipleSelection = val;
-        },
-        getList(pageIndex, rows, callback) {
-            if (!this.list.length) {
-                for (let i = 1; i <= 11; i++) {
-                    this.list.push({
-                        num: "c" + i,
-                        name: "行政部"
-                    });
-                }
+            this.deleteList = [];
+            for (let i in val) {
+                this.deleteList.push(val[i].id);
             }
-            callback(this.list, 12);
         },
-        del() {
+        //打开新增窗口
+        openAddDialog() {
+            this.$refs.addDialog.showDialog();
+        },
+        //打开编辑窗口
+        openUpdateDialog(id) {
+            this.$refs.updateDialog.showDialog(id);
+        },
+        //查询/获取List
+        getList(pageIndex, rows, callback) {
+            this.$propertyApi.resourceManagement.classification
+                .list({
+                    pageNum: pageIndex,
+                    pageSize: rows,
+                    grade: this.selectForm.grade,
+                    search: this.selectForm.search
+                })
+                .then(res => {
+                    if (res.code == 1000) {
+                        this.list = res.data.list;
+                        callback(this.list, res.data.total);
+                    } else {
+                        this.$$alert({
+                            message: res.msg,
+                            type: "error"
+                        });
+                    }
+                });
+        },
+        //删除操作
+        del(id) {
+            if (id.length == 0) {
+                this.$$message({
+                    message: "请选择批量删除对象",
+                    type: "warning"
+                });
+                return;
+            }
             this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
                 type: "warning"
             })
                 .then(() => {
-                    this.$message({
-                        type: "success",
-                        message: "删除成功!"
-                    });
+                    if (Array.isArray(id)) {
+                        this.$propertyApi.resourceManagement.classification
+                            .deleteList({
+                                ids: id
+                            })
+                            .then(res => {
+                                if (res.code == 1000) {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "success"
+                                    });
+                                    this.$refs.page.getList(1);
+                                } else {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "error"
+                                    });
+                                }
+                            });
+                    } else {
+                        this.$propertyApi.resourceManagement.classification
+                            .delete({
+                                id: id
+                            })
+                            .then(res => {
+                                if (res.code == 1000) {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "success"
+                                    });
+                                    this.$refs.page.getList(1);
+                                } else {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "error"
+                                    });
+                                }
+                            });
+                    }
                 })
                 .catch(() => {
                     this.$message({
@@ -256,7 +242,10 @@ export default {
         }
     },
     components: {
-        ctrlPage
+        ctrlPage,
+        Dictionary,
+        addDialog,
+        updateDialog
     }
 };
 </script>

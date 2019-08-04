@@ -23,31 +23,31 @@ const user = {
       commit
     }, params) {
       return new Promise((resolve, reject) => {
-        commit('SET_ACCOUNT', 123)
-        setUserInfo({
-          account: params.account,
-          token: 123
-        })
-        resolve({
-          account: params.account,
-          token: 123
-        })
-        /*api.manager.login(params).then((res) => {
+        // commit('SET_ACCOUNT', 123)
+        // setUserInfo({
+        //   account: params.account,
+        //   token: 123
+        // })
+        // resolve({
+        //   account: params.account,
+        //   token: 123
+        // })
+        api.base.loginIn(params).then((res) => {
           if (res.code == 1000) {
             const { data } = res
             commit('SET_ACCOUNT', data)
             setUserInfo({
-              userName: params.username,
-              token: data
+              userName: data.userInfo,
+              token: data.token
             })
             resolve({
-              userName: params.username,
-              token: data
+              userName: data.userInfo,
+              token: data.token
             })
           } else {
             reject(res.message)
           }
-        })*/
+        })
       })
     },
     // 退出登录

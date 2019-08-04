@@ -8,9 +8,9 @@
             center
         >
             <el-form
-                :model="addForm"
+                :model="form"
                 :rules="rules"
-                ref="addForm"
+                ref="form"
                 label-width="100px"
                 class="demo-ruleForm dialog-form"
                 label-position="left"
@@ -21,7 +21,7 @@
                             label="部门编码"
                             prop="deptCode"
                         >
-                            <el-input v-model="addForm.deptCode"></el-input>
+                            <el-input v-model="form.deptCode"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col
@@ -32,7 +32,7 @@
                             label="联系方式"
                             prop="tel"
                         >
-                            <el-input v-model="addForm.tel"></el-input>
+                            <el-input v-model="form.tel"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -42,7 +42,7 @@
                             label="部门简称"
                             prop="deptIntro"
                         >
-                            <el-input v-model="addForm.deptIntro"></el-input>
+                            <el-input v-model="form.deptIntro"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col
@@ -53,16 +53,10 @@
                             label="上级部门"
                             prop="parentId"
                         >
-                            <el-select
-                                clearable
-                                v-model="addForm.parentId"
-                                placeholder="请选择上级部门"
-                            >
-                                <el-option
-                                    label="物业部门"
-                                    value="01"
-                                ></el-option>
-                            </el-select>
+                            <Dictionary
+                                :typeCode="3001"
+                                v-model="form.parentId"
+                            />
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -72,7 +66,7 @@
                             label="部门全称"
                             prop="deptName"
                         >
-                            <el-input v-model="addForm.deptName"></el-input>
+                            <el-input v-model="form.deptName"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col
@@ -83,7 +77,7 @@
                             label="排序"
                             prop="sort"
                         >
-                            <el-input v-model="addForm.sort"></el-input>
+                            <el-input v-model="form.sort"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -104,12 +98,14 @@
 </template>
 
 <script>
+import Dictionary from '@/components/common/select/Dictionary'
+
 export default {
     props: {},
     data() {
         return {
             dialogVisible: false,
-            addForm: {
+            form: {
                 deptCode: "",
                 deptIntro: "",
                 deptName: "",
@@ -153,10 +149,10 @@ export default {
         },
         //新增操作
         add() {
-            this.$refs.addForm.validate(valid => {
+            this.$refs.form.validate(valid => {
                 if (valid) {
                     this.$systemApi.estateManage
-                        .deptCreate(this.addForm)
+                        .deptCreate(this.form)
                         .then(res => {
                             if (res.code == 1000) {
                                 this.dialogVisible = false;
@@ -164,6 +160,7 @@ export default {
                                     message: res.message,
                                     type: "success"
                                 });
+                                this.$refs.form.resetFields();
                                 this.$parent.$refs.page.getList(1);
                             } else {
                                 this.$$message({
@@ -175,6 +172,9 @@ export default {
                 }
             });
         }
+    },
+    components: {
+        Dictionary,
     }
 };
 </script>

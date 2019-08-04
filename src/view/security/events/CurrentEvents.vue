@@ -13,7 +13,7 @@
 				    <Dictionary :typeCode="2003" v-model="form.urgencyDegree"/>
                 </el-form-item>
                 <el-form-item label="事件状态">
-				    <Dictionary :typeCode="2004" v-model="form.eventState"/>
+				    <EventStatusSelect v-model="form.eventState"/>
                 </el-form-item>
                 <el-form-item label="关键字">
                     <el-input v-model="form.search" placeholder="请输关键字"/>
@@ -29,7 +29,7 @@
                     />
                 </el-form-item>
                 <el-form-item class="fr">
-                    <el-button type="primary" size="small" @click="getList(1)">
+                    <el-button type="primary" size="small" @click="$refs.page.getList(1)">
                         查询&nbsp;<i class="icon-x-sousuo"/>
                     </el-button>
                 </el-form-item>
@@ -41,7 +41,7 @@
             <!-- page header -->
             <div class="com-page-header-wrap clear">
                 <div class="fr">
-                    <el-button type="primary" size="mini" plain>新增</el-button>
+                    <el-button type="primary" size="mini" plain @click="openAdd">新增</el-button>
                 </div>
                 <span class="com-page-header-title">当前事件</span>
             </div>
@@ -59,38 +59,50 @@
                     type="index"
                 />
                 <el-table-column
-                    prop="carNum"
+                    prop="eventNumber"
                     label="事件编号"
                     width="180"
                 />
                 <el-table-column
-                    prop="address"
+                    prop="occurrenceTime"
                     label="发生时间"
                 />
                 <el-table-column
-                    prop="address"
+                    prop="eventName"
                     label="事件名"
                 />
                 <el-table-column
-                    prop="address"
                     label="事件来源"
-                />
+                >
+                    <template slot-scope="scope">
+                        <DictionaryText :typeCode="2001" :dicCode="scope.row.eventSource"/>
+                    </template>
+                </el-table-column>
                 <el-table-column
-                    prop="address"
                     label="事件类型"
-                />
+                >
+                    <template slot-scope="scope">
+                        <DictionaryText :typeCode="2002" :dicCode="scope.row.eventType"/>
+                    </template>
+                </el-table-column>
                 <el-table-column
-                    prop="address"
                     label="紧急程度"
-                />
+                >
+                    <template slot-scope="scope">
+                        <DictionaryText :typeCode="2003" :dicCode="scope.row.urgencyDegree"/>
+                    </template>
+                </el-table-column>
                 <el-table-column
-                    prop="address"
+                    prop="eventAddress"
                     label="发生地点"
                 />
                 <el-table-column
-                    prop="address"
                     label="事件状态"
-                />
+                >
+                    <template slot-scope="scope">
+                        <EventStatusText :id="scope.row.eventState"/>
+                    </template>
+                </el-table-column>
                 <el-table-column
                     label="操作"
                     width="180"
@@ -108,8 +120,11 @@
             <!-- 分页 -->
             <CtrlPage :setPage="getList" align="center" ref="page" v-show="total > list.length"/>
         </div>
-
+        <!-- 新增事件 -->
+        <EventAdd ref="dlgEventAdd"/>
+        <!-- 事件详情 -->
         <EventDetail ref="dlgEventDetail"/>
+        <!-- 关闭事件 -->
         <EventClose ref="dlgEventClose"/>
     </div>
 </template>
@@ -117,7 +132,11 @@
 <script>
     import EventClose from '@/components/security/event/DlgEventClose'
     import EventDetail from '@/components/security/event/DlgEventDetail'
+    import EventAdd from '@/components/security/event/DlgEventAdd'
     import Dictionary from '@/components/common/select/Dictionary'
+    import DictionaryText from '@/components/common/select/DictionaryText'
+    import EventStatusSelect from '@/components/security/event/EventStatusSelect'
+    import EventStatusText from '@/components/security/event/EventStatusText'
     import CtrlPage from '@/components/common/other/CtrlPage'
     export default {
         name: 'security-current-events',
@@ -141,7 +160,7 @@
                     // 结束时间
                     endTime: null
                 },
-                list: [{}],
+                list: [],
                 total: 0
             }
         },
@@ -174,10 +193,19 @@
                     callback(this.list, this.total)
                 })
             },
+            // 新增弹窗
+            openAdd () {
+                this.$refs.dlgEventAdd.open(() => {
+                    this.$$notify({
+                        message: '操作成功'
+                    })
+                    this.$refs.page.getList(1)
+                })
+            },
             // 查询详情
             openDetail (row) {
                 console.log(row)
-                this.$refs.dlgEventDetail.open()
+                this.$refs.dlgEventDetail.open(row.id)
             },
             // 结束
             openClose (row) {
@@ -187,8 +215,12 @@
         },
         components: {
             EventClose,
+            EventAdd,
             EventDetail,
+            EventStatusSelect,
+            EventStatusText,
             Dictionary,
+            DictionaryText,
             CtrlPage
         }
     }

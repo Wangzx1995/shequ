@@ -45,7 +45,8 @@ ServerMixin.install = function (v, options) {
         let opts = {
             title: '提示',
             confirmButtonText: '确定',
-            cancelButtonText: '取消'
+            cancelButtonText: '取消',
+            type: 'warning'
         }
         let o = { ...opts, ...options }
         return v.prototype.$confirm(o.message, o.title, o)

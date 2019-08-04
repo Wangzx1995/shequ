@@ -102,103 +102,15 @@
                 />
             </div>
         </div>
-        <el-dialog
-            title="新增片区"
-            :visible.sync="dialogVisible.add"
-            width="400px"
-            :modal-append-to-body='false'
-            center
-        >
-            <el-form
-                :model="addForm"
-                :rules="rules"
-                ref="addForm"
-                label-width="100px"
-                class="demo-ruleForm dialog-form"
-                label-position="left"
-            >
-                <el-row>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="片区编号"
-                            prop="code"
-                        >
-                            <el-input v-model="addForm.code"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="片区名称"
-                            prop="name"
-                        >
-                            <el-input v-model="addForm.name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="add()"
-                >保 存</el-button>
-                <el-button @click="dialogVisible.add = false">取 消</el-button>
-            </div>
-        </el-dialog>
-        <el-dialog
-            title="编辑片区"
-            :visible.sync="dialogVisible.update"
-            width="400px"
-            :modal-append-to-body='false'
-            center
-        >
-            <el-form
-                :model="updateForm"
-                :rules="rules"
-                ref="updateForm"
-                label-width="100px"
-                class="demo-ruleForm dialog-form"
-                label-position="left"
-            >
-                <el-row>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="片区编号"
-                            prop="code"
-                        >
-                            <el-input v-model="updateForm.code"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item
-                            label="片区名称"
-                            prop="name"
-                        >
-                            <el-input v-model="updateForm.name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="update()"
-                >保 存</el-button>
-                <el-button @click="dialogVisible.update = false">取 消</el-button>
-            </div>
-        </el-dialog>
+        <addDialog ref="addDialog" />
+        <updateDialog ref="updateDialog" />
     </div>
 </template>
 
 <script>
 import ctrlPage from "@/components/common/other/CtrlPage";
+import addDialog from "@/components/property/houseProperty/area/addDialog";
+import updateDialog from "@/components/property/houseProperty/area/updateDialog";
 
 export default {
     name: "property-houseProperty-area",
@@ -208,24 +120,6 @@ export default {
                 user: ""
             },
             list: [],
-            addForm: {
-                code: "",
-                name: ""
-            },
-            updateForm: {},
-            rules: {
-                code: [
-                    {
-                        required: true,
-                        message: "请输入片区编号",
-                        trigger: "blur"
-                    }
-                ]
-            },
-            dialogVisible: {
-                add: false,
-                update: false
-            },
             deleteList: []
         };
     },
@@ -235,72 +129,47 @@ export default {
     methods: {
         //多选框
         handleSelectionChange(val) {
-            this.deleteList = []
+            this.deleteList = [];
             for (let i in val) {
-                this.deleteList.push(val[i].id)
+                this.deleteList.push(val[i].id);
             }
-        },
-        //打开编辑窗口
-        openUpdateDialog(form) {
-            this.updateForm = form;
-            this.dialogVisible.update = true
         },
         //打开新增窗口
         openAddDialog() {
-            this.dialogVisible.add = true
-            this.$nextTick(() => {
-                this.$refs['addForm'].resetFields();
-            })
+            this.$refs.addDialog.showDialog();
+        },
+        //打开编辑窗口
+        openUpdateDialog(row) {
+            this.$refs.updateDialog.showDialog(row);
         },
         //查询/获取List
         getList(pageIndex, rows, callback) {
-            this.$propertyApi.houseProperty.area.list({
-                pageNum: pageIndex,
-                pageSize: rows,
-                search: this.selectForm.search
-            }).then((res) => {
-                if (res.code == 1000) {
-                    this.list = res.data.list
-                    callback(this.list, res.data.total)
-                } else {
-                    this.$$alert({
-                        message: res.msg,
-                        type: 'error'
-                    })
-                }
-            })
-        },
-        //新增操作
-        add() {
-            this.$refs.addForm.validate(valid => {
-                if (valid) {
-                    this.$propertyApi.houseProperty.area.add(this.addForm)
-                        .then(res => {
-                            if (res.code == 1000) {
-                                this.dialogVisible.add = false
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'success'
-                                })
-                                this.$refs.page.getList(1);
-                            } else {
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'error'
-                                })
-                            }
-                        })
-                }
-            });
+            this.$propertyApi.houseProperty.area
+                .list({
+                    pageNum: pageIndex,
+                    pageSize: rows,
+                    search: this.selectForm.search
+                })
+                .then(res => {
+                    if (res.code == 1000) {
+                        this.list = res.data.list;
+                        callback(this.list, res.data.total);
+                    } else {
+                        this.$$alert({
+                            message: res.msg,
+                            type: "error"
+                        });
+                    }
+                });
         },
         //删除操作
         del(id) {
             if (id.length == 0) {
                 this.$$message({
-                    message: '请选择批量删除对象',
-                    type: 'warning'
-                })
-                return
+                    message: "请选择批量删除对象",
+                    type: "warning"
+                });
+                return;
             }
             this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
                 confirmButtonText: "确定",
@@ -309,41 +178,43 @@ export default {
             })
                 .then(() => {
                     if (Array.isArray(id)) {
-                        this.$propertyApi.houseProperty.area.deleteList({
-                            ids: id
-                        })
+                        this.$propertyApi.houseProperty.area
+                            .deleteList({
+                                ids: id
+                            })
                             .then(res => {
                                 if (res.code == 1000) {
                                     this.$$message({
                                         message: res.message,
-                                        type: 'success'
-                                    })
+                                        type: "success"
+                                    });
                                     this.$refs.page.getList(1);
                                 } else {
                                     this.$$message({
                                         message: res.message,
-                                        type: 'error'
-                                    })
+                                        type: "error"
+                                    });
                                 }
-                            })
+                            });
                     } else {
-                        this.$propertyApi.houseProperty.area.delete({
-                            id: id
-                        })
+                        this.$propertyApi.houseProperty.area
+                            .delete({
+                                id: id
+                            })
                             .then(res => {
                                 if (res.code == 1000) {
                                     this.$$message({
                                         message: res.message,
-                                        type: 'success'
-                                    })
+                                        type: "success"
+                                    });
                                     this.$refs.page.getList(1);
                                 } else {
                                     this.$$message({
                                         message: res.message,
-                                        type: 'error'
-                                    })
+                                        type: "error"
+                                    });
                                 }
-                            })
+                            });
                     }
                 })
                 .catch(() => {
@@ -352,33 +223,12 @@ export default {
                         message: "已取消删除"
                     });
                 });
-        },
-        //修改操作
-        update() {
-            this.$refs.updateForm.validate(valid => {
-                if (valid) {
-                    this.$propertyApi.houseProperty.area.update(this.updateForm)
-                        .then(res => {
-                            if (res.code == 1000) {
-                                this.dialogVisible.update = false
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'success'
-                                })
-                                this.$refs.page.getList(1);
-                            } else {
-                                this.$$message({
-                                    message: res.message,
-                                    type: 'error'
-                                })
-                            }
-                        })
-                }
-            });
-        },
+        }
     },
     components: {
-        ctrlPage
+        ctrlPage,
+        addDialog,
+        updateDialog
     }
 };
 </script>

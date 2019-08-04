@@ -2,7 +2,10 @@
     <div class="com-header">
         <div class="com-header-inner-security">
             <!-- logo -->
-            <router-link to="/" class="com-logo"></router-link>
+            <router-link
+                to="/"
+                class="com-logo"
+            ></router-link>
             <!-- navbar -->
             <el-menu
                 class="com-top-menu"
@@ -13,7 +16,11 @@
                 router
             >
                 <template v-for="(item, index) in menu">
-                    <el-submenu :index="`${index}`" :key="index" v-if="item.meta">
+                    <el-submenu
+                        :index="`${index}`"
+                        :key="index"
+                        v-if="item.meta"
+                    >
                         <template slot="title">
                             <span class="ele-p-title">{{ item.meta && item.meta.title }}</span>
                         </template>
@@ -27,7 +34,10 @@
                             {{ subitem.meta && subitem.meta.title }}
                         </el-menu-item>
                     </el-submenu>
-                    <el-menu-item v-else :index="item.path + item.children[0].path">
+                    <el-menu-item
+                        v-else
+                        :index="item.path + item.children[0].path"
+                    >
                         <span
                             slot="title"
                             class="ele-p-title p10"
@@ -61,11 +71,15 @@
                 <!-- 消息中心 -->
                 <div class="header-btn-bell">
                     <el-badge :is-dot="!!message">
-                    <el-tooltip effect="dark" :content="message ? `有${message}条未读消息`:`消息中心`" placement="bottom">
-                        <router-link to="/tabs">
-                        <i class="ico icon-x-bell"></i>
-                        </router-link>
-                    </el-tooltip>
+                        <el-tooltip
+                            effect="dark"
+                            :content="message ? `有${message}条未读消息`:`消息中心`"
+                            placement="bottom"
+                        >
+                            <router-link to="/tabs">
+                                <i class="ico icon-x-bell"></i>
+                            </router-link>
+                        </el-tooltip>
                     </el-badge>
                 </div>
                 <!-- 分割线 -->
@@ -73,18 +87,24 @@
                 <!-- 用户头像 -->
                 <div class="header-user-avatar"><img src="./../../../assets/img.jpg"></div>
                 <!-- 用户名下拉菜单 -->
-                <el-dropdown class="header-user-name" size="small">
+                <el-dropdown
+                    class="header-user-name"
+                    size="small"
+                >
                     <span class="el-dropdown-link">
                         你好，{{ userName }} <i class="el-icon-caret-bottom"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item @click.native="updatePassword">修改密码</el-dropdown-item>
-                        <el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
+                        <el-dropdown-item
+                            divided
+                            @click.native="logout"
+                        >退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </div>
         </div>
-        
+
         <!-- tab -->
         <div class="header-page-tab">
 
@@ -97,32 +117,35 @@
                 @close="closeTag(index)"
             >
                 <router-link :to="tag.path">
-                {{tag.title}}
+                    {{tag.title}}
                 </router-link>
             </el-tag>
         </div>
 
-        <updatePsd v-dialogDrag ref="dlgUpdatePsd"></updatePsd>
+        <updatePsd
+            v-dialogDrag
+            ref="dlgUpdatePsd"
+        ></updatePsd>
     </div>
 </template>
 
 <script>
-  import { getUserInfo } from '@/utils/auth'
-  import bus from '@/components/bus'
-  import updatePsd from '@/components/common/dialog/DlgUpdatePass'
+import { getUserInfo } from '@/utils/auth'
+import bus from '@/components/bus'
+import updatePsd from '@/components/common/dialog/DlgUpdatePass'
 
-  export default {
-    data () {
-      return {
-        userName: getUserInfo().account,
-        message: 3,
-        tagsList: [],
-        menu: []
-      }
+export default {
+    data() {
+        return {
+            userName: getUserInfo().userName.realName,
+            message: 3,
+            tagsList: [],
+            menu: []
+        }
     },
-    created () {
+    created() {
         this.setTags(this.$route)
-        
+
         // 通过 Event Bus 进行组件间通信，来折叠侧边栏
         bus.$on('collapse', data => {
             this.collapse = data
@@ -134,55 +157,57 @@
             }
         });
     },
-    watch:{
-      $route(newValue, oldValue){
-        this.setTags(newValue)
-      }
+    watch: {
+        $route(newValue, oldValue) {
+            this.setTags(newValue)
+        }
     },
     methods: {
-      // 退出登录
-      logout () {
-        this.$$confirm('确认退出当前系统?', '提示', {
-            type: 'warning'
-        }).then(() => {
-          this.$store.dispatch("logout")
-        })
-      },
-      // 修改密码
-      updatePassword: function() {
-        this.$refs.dlgUpdatePsd.onOpen()
-      },
-      // 设置标签
-      setTags(route){
-        const isExist = this.tagsList.some(item => {
-          return item.path === route.fullPath
-        })
-        if(!isExist){
-          if(this.tagsList.length >= 8){
-            this.tagsList.shift()
-          }
-          this.tagsList.push({
-            title: route.meta.title,
-            path: route.fullPath,
-            name: route.matched[1].components.default.name
-          })
+        // 退出登录
+        logout() {
+            this.$$confirm('确认退出当前系统?', '提示', {
+                type: 'warning'
+            }).then(() => {
+                this.$store.dispatch("logout")
+            })
+        },
+        // 修改密码
+        updatePassword: function () {
+            this.$refs.dlgUpdatePsd.onOpen()
+        },
+        // 设置标签
+        setTags(route) {
+            if (!route.meta.hiddenMenu) {
+                const isExist = this.tagsList.some(item => {
+                    return item.path === route.fullPath
+                })
+                if (!isExist) {
+                    if (this.tagsList.length >= 8) {
+                        this.tagsList.shift()
+                    }
+                    this.tagsList.push({
+                        title: route.meta.title,
+                        path: route.fullPath,
+                        name: route.matched[1].components.default.name
+                    })
+                }
+
+                bus.$emit('tags', this.tagsList)
+            }
+        },
+        // 关闭单个标签
+        closeTag(index) {
+            const delItem = this.tagsList.splice(index, 1)[0]
+            const item = this.tagsList[index] ? this.tagsList[index] : this.tagsList[index - 1]
+            if (item) {
+                delItem.path === this.$route.fullPath && this.$router.push(item.path)
+            } else {
+                this.$router.push('/')
+            }
         }
-        
-        bus.$emit('tags', this.tagsList)
-      },
-      // 关闭单个标签
-      closeTag (index) {
-        const delItem = this.tagsList.splice(index, 1)[0]
-        const item = this.tagsList[index] ? this.tagsList[index] : this.tagsList[index - 1]
-        if (item) {
-            delItem.path === this.$route.fullPath && this.$router.push(item.path)
-        }else{
-            this.$router.push('/')
-        }
-      }
     },
     components: {
-      updatePsd
+        updatePsd
     }
-  }
+}
 </script>

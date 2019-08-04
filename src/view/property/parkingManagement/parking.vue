@@ -9,12 +9,15 @@
             >
                 <el-form-item label="关键词">
                     <el-input
-                        v-model="selectForm.user"
+                        v-model="selectForm.search"
                         placeholder="关键词"
                     ></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary">查询<i class="icon-x-sousuo el-icon--right"></i></el-button>
+                    <el-button
+                        type="primary"
+                        @click="$refs.page.getList(1)"
+                    >查询<i class="icon-x-sousuo el-icon--right"></i></el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -27,12 +30,13 @@
                             type="primary"
                             plain
                             size="mini"
-                            @click="dialogVisible=true"
+                            @click="openAddDialog()"
                         >新增</el-button>
                         <el-button
                             type="danger"
                             plain
                             size="mini"
+                            @click="del(deleteList)"
                         >批量删除</el-button>
                     </template>
                 </div>
@@ -64,42 +68,42 @@
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
+                        prop="code"
                         label="停车场编号"
                         align="center"
                         min-width="100"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
+                        prop="name"
                         label="停车场名称"
                         align="center"
                         min-width="100"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
+                        prop="totalStall"
                         label="总车位数（个）"
                         align="center"
                         min-width="100"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
+                        prop="settledStall"
                         label="固定车位数（个）"
                         align="center"
                         min-width="100"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
+                        prop="remark"
                         label="备注"
                         align="center"
                         min-width="100"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
+                        prop="createtime"
                         label="创建时间"
                         align="center"
                         min-width="100"
@@ -114,17 +118,17 @@
                         <template slot-scope="scope">
                             <el-button
                                 type="primary"
-                                @click="dialogVisible=true"
+                                @click="openDetailDialog(scope.row)"
                             >查看</el-button>
                             <span class="com-page-header-title line"></span>
                             <el-button
                                 type="primary"
-                                @click="dialogVisible=true"
+                                @click="openUpdateDialog(scope.row)"
                             >编辑</el-button>
                             <span class="com-page-header-title line"></span>
                             <el-button
                                 type="danger"
-                                @click="del(scope.row)"
+                                @click="del(scope.row.id)"
                             >删除</el-button>
                         </template>
                     </el-table-column>
@@ -136,40 +140,24 @@
                 />
             </div>
         </div>
-        <el-dialog
-            title="新增"
-            :visible.sync="dialogVisible"
-            width="800px"
-            :modal-append-to-body='false'
-            center
-        >
-            <div>
-                没图
-            </div>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="dialogVisible = false"
-                >保 存</el-button>
-                <el-button @click="dialogVisible = false">取 消</el-button>
-            </div>
-        </el-dialog>
+        <addDialog ref="addDialog" />
+        <updateDialog ref="updateDialog" />
+        <detailDialog ref="detailDialog" />
     </div>
 </template>
 
 <script>
 import ctrlPage from "@/components/common/other/CtrlPage";
+import addDialog from "@/components/property/parkingManagement/parking/addDialog";
+import updateDialog from "@/components/property/parkingManagement/parking/updateDialog";
+import detailDialog from "@/components/property/parkingManagement/parking/detailDialog";
 
 export default {
     name: "property-parkingManagement-parking",
     data() {
         return {
             selectForm: {
-                user: ""
+                search: ""
             },
             list: [],
             form: {
@@ -195,37 +183,106 @@ export default {
                 ]
             },
             dialogVisible: false,
+            deleteList: []
         };
     },
     mounted() {
         this.$refs.page.getList(1);
     },
     methods: {
+        //多选框
         handleSelectionChange(val) {
-            this.multipleSelection = val;
-        },
-        getList(pageIndex, rows, callback) {
-            if (!this.list.length) {
-                for (let i = 1; i <= 11; i++) {
-                    this.list.push({
-                        num: "c" + i,
-                        name: "c" + i
-                    });
-                }
+            this.deleteList = [];
+            for (let i in val) {
+                this.deleteList.push(val[i].id);
             }
-            callback(this.list, 12);
         },
-        del() {
+        //打开新增窗口
+        openAddDialog() {
+            this.$refs.addDialog.showDialog();
+        },
+        //打开编辑窗口
+        openUpdateDialog(row) {
+            this.$refs.updateDialog.showDialog(row);
+        },
+        //打开查看窗口
+        openDetailDialog(row) {
+            this.$refs.detailDialog.showDialog(row);
+        },
+        //查询/获取List
+        getList(pageIndex, rows, callback) {
+            this.$propertyApi.parkingManagement.parking
+                .list({
+                    pageNum: pageIndex,
+                    pageSize: rows,
+                    search: this.selectForm.search
+                })
+                .then(res => {
+                    if (res.code == 1000) {
+                        this.list = res.data.list;
+                        callback(this.list, res.data.total);
+                    } else {
+                        this.$$alert({
+                            message: res.msg,
+                            type: "error"
+                        });
+                    }
+                });
+        },
+        //删除操作
+        del(id) {
+            if (id.length == 0) {
+                this.$$message({
+                    message: "请选择批量删除对象",
+                    type: "warning"
+                });
+                return;
+            }
             this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
                 type: "warning"
             })
                 .then(() => {
-                    this.$message({
-                        type: "success",
-                        message: "删除成功!"
-                    });
+                    if (Array.isArray(id)) {
+                        this.$propertyApi.parkingManagement.parking
+                            .deleteList({
+                                ids: id
+                            })
+                            .then(res => {
+                                if (res.code == 1000) {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "success"
+                                    });
+                                    this.$refs.page.getList(1);
+                                } else {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "error"
+                                    });
+                                }
+                            });
+                    } else {
+                        this.$propertyApi.parkingManagement.parking
+                            .delete({
+                                id: id
+                            })
+                            .then(res => {
+                                if (res.code == 1000) {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "success"
+                                    });
+                                    this.$refs.page.getList(1);
+                                } else {
+                                    this.$$message({
+                                        message: res.message,
+                                        type: "error"
+                                    });
+                                }
+                            });
+                    }
                 })
                 .catch(() => {
                     this.$message({
@@ -236,7 +293,10 @@ export default {
         }
     },
     components: {
-        ctrlPage
+        ctrlPage,
+        addDialog,
+        updateDialog,
+        detailDialog
     }
 };
 </script>

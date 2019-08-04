@@ -84,7 +84,7 @@
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="parentId"
+                        prop="parentDeptName"
                         label="上级部门"
                         align="center"
                     >

@@ -6,105 +6,60 @@
                 :model="selectForm"
                 class="demo-form-inline"
                 label-position="left"
+                ref="selectForm"
             >
                 <el-form-item label="所属片区">
-                    <el-select
-                        clearable
-                        v-model="selectForm.user"
-                        placeholder="请选择片区"
-                    >
-                        <el-option
-                            label="片区一"
-                            value="shanghai"
-                        ></el-option>
-                        <el-option
-                            label="片区二"
-                            value="beijing"
-                        ></el-option>
-                    </el-select>
+                    <areaId v-model="selectForm.areaId" />
                 </el-form-item>
                 <el-form-item label="所属楼栋">
-                    <el-select
-                        clearable
-                        v-model="selectForm.user"
-                        placeholder="请选择楼栋"
-                    >
-                        <el-option
-                            label="楼栋一"
-                            value="shanghai"
-                        ></el-option>
-                        <el-option
-                            label="楼栋二"
-                            value="beijing"
-                        ></el-option>
-                    </el-select>
+                    <buildingId
+                        :areaId="selectForm.areaId"
+                        v-model="selectForm.buildingId"
+                    />
                 </el-form-item>
                 <el-form-item label="所属单元">
-                    <el-select
-                        clearable
-                        v-model="selectForm.user"
-                        placeholder="请选择单元"
-                    >
-                        <el-option
-                            label="单元一"
-                            value="shanghai"
-                        ></el-option>
-                        <el-option
-                            label="单元二"
-                            value="beijing"
-                        ></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="所属房屋">
-                    <el-select
-                        clearable
-                        v-model="selectForm.user"
-                        placeholder="请选择房屋"
-                    >
-                        <el-option
-                            label="房屋一"
-                            value="shanghai"
-                        ></el-option>
-                        <el-option
-                            label="房屋二"
-                            value="beijing"
-                        ></el-option>
-                    </el-select>
+                    <elementId
+                        :buildingId="selectForm.buildingId"
+                        v-model="selectForm.elementId"
+                    />
                 </el-form-item>
                 <el-form-item label="到访状态">
                     <el-select
                         clearable
-                        v-model="selectForm.user"
+                        v-model="selectForm.status"
                         placeholder="请选择到访状态"
                     >
                         <el-option
-                            label="到访状态一"
-                            value="shanghai"
+                            v-for="item in statusList"
+                            :key="item.value"
+                            :label="item.value"
+                            :value="item.id"
                         ></el-option>
-                        <el-option
-                            label="到访状态二"
-                            value="beijing"
-                        ></el-option>
+
                     </el-select>
                 </el-form-item>
                 <el-form-item label="关键词">
                     <el-input
-                        v-model="selectForm.user"
+                        v-model="selectForm.search"
                         placeholder="关键词"
                     ></el-input>
                 </el-form-item>
-                <el-form-item label="来访时间">
+                <el-form-item label="合同日期">
                     <el-date-picker
-                        v-model="selectForm.user"
+                        v-model="selectForm.timeValue"
                         type="daterange"
                         range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
+                        start-placeholder="合同开始日"
+                        end-placeholder="合同结束日"
+                        value-format="yyyy/MM/dd"
                     >
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item style="float:right">
-                    <el-button type="primary">查询<i class="icon-x-sousuo el-icon--right"></i></el-button>
+                    <el-button
+                        type="primary"
+                        @click="$refs.page.getList(1)"
+                    >查询<i class="icon-x-sousuo el-icon--right"></i></el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -117,7 +72,7 @@
                             type="primary"
                             plain
                             size="mini"
-                            @click="dialogVisible=true"
+                            @click="openAddDialog()"
                         >新增访客</el-button>
                     </template>
                 </div>
@@ -148,64 +103,76 @@
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
+                        prop="name"
                         label="访客姓名"
                         align="center"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="num"
+                        prop="userName"
                         label="被访人"
                         align="center"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="name"
                         label="性别"
                         align="center"
                     >
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.sex==1">男</span>
+                            <span v-if="scope.row.sex==2">女</span>
+                        </template>
                     </el-table-column>
                     <el-table-column
-                        prop="name"
+                        prop="phone"
                         label="手机号"
                         align="center"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="name"
+                        prop="documentType"
                         label="证件类型"
                         align="center"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="name"
+                        prop="documentNumber"
                         label="证件号"
                         align="center"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="name"
+                        prop="dataSources"
                         label="数据来源"
                         align="center"
                     >
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.dataSources==1">系统录入</span>
+                            <span v-if="scope.row.dataSources==2">APP</span>
+                        </template>
                     </el-table-column>
                     <el-table-column
-                        prop="name"
+                        prop="appointmentTime"
                         label="预约时间"
                         align="center"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="name"
+                        prop="visittime"
                         label="来访时间"
                         align="center"
                     >
                     </el-table-column>
                     <el-table-column
-                        prop="name"
+                        prop="status"
                         label="到访状态"
                         align="center"
                     >
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.status==1">未到访</span>
+                            <span v-if="scope.row.status==2">已到访</span>
+                            <span v-if="scope.row.status==3">已结束</span>
+                        </template>
                     </el-table-column>
                     <el-table-column
                         label="操作"
@@ -215,7 +182,7 @@
                         <template slot-scope="scope">
                             <el-button
                                 type="primary"
-                                @click="dialogVisible=true"
+                                @click="openDetailDialog(scope.row.id)"
                             >查看</el-button>
                         </template>
                     </el-table-column>
@@ -227,84 +194,104 @@
                 />
             </div>
         </div>
-        <el-dialog
-            title="新增访客"
-            :visible.sync="dialogVisible"
-            width="800px"
-            :modal-append-to-body='false'
-            center
-        >
-            <div>
-                没图
-            </div>
-            <div
-                slot="footer"
-                class="dialog-footer"
-                style="text-align:center"
-            >
-                <el-button
-                    type="primary"
-                    @click="dialogVisible = false"
-                >保 存</el-button>
-                <el-button @click="dialogVisible = false">取 消</el-button>
-            </div>
-        </el-dialog>
+        <addDialog ref="addDialog" />
+        <detailDialog ref="detailDialog" />
     </div>
 </template>
 
 <script>
 import ctrlPage from "@/components/common/other/CtrlPage";
+import Dictionary from "@/components/common/select/Dictionary";
+import areaId from "@/components/property/selectForm/areaId";
+import buildingId from "@/components/property/selectForm/buildingId";
+import elementId from "@/components/property/selectForm/elementId";
+import roomId from "@/components/property/selectForm/roomId";
+
+import addDialog from "@/components/property/personManagement/visitor/addDialog";
+import detailDialog from "@/components/property/personManagement/visitor/detailDialog";
 
 export default {
     name: "property-personManagement-visitor",
     data() {
         return {
             selectForm: {
-                user: ""
+                areaId: null,
+                buildingId: null,
+                elementId: null,
+                roomId: null,
+                search: null,
+                startTime: null,
+                endTime: null,
+                status: null,
+                timeValue: null
             },
             list: [],
             form: {
                 num: "",
                 name: ""
             },
-            rules: {
-                num: [
-                    {
-                        type: "date",
-                        required: true,
-                        message: "请输入部门编码",
-                        trigger: "blur"
-                    }
-                ],
-                name: [
-                    {
-                        type: "date",
-                        required: true,
-                        message: "请输入部门简称",
-                        trigger: "blur"
-                    }
-                ]
-            },
-            dialogVisible: false,
+            statusList: [
+                {
+                    id: 1,
+                    value: "未到访"
+                },
+                {
+                    id: 2,
+                    value: "已到访"
+                },
+                {
+                    id: 3,
+                    value: "已结束"
+                }
+            ],
+            deleteList: []
         };
     },
     mounted() {
         this.$refs.page.getList(1);
     },
     methods: {
+        //多选框
         handleSelectionChange(val) {
-            this.multipleSelection = val;
-        },
-        getList(pageIndex, rows, callback) {
-            if (!this.list.length) {
-                for (let i = 1; i <= 11; i++) {
-                    this.list.push({
-                        num: "c" + i,
-                        name: "c" + i
-                    });
-                }
+            this.deleteList = [];
+            for (let i in val) {
+                this.deleteList.push(val[i].id);
             }
-            callback(this.list, 12);
+        },
+        //打开新增窗口
+        openAddDialog() {
+            this.$refs.addDialog.showDialog();
+        },
+        //打开查看窗口
+        openDetailDialog(id) {
+            this.$refs.detailDialog.showDialog(id);
+        },
+        //查询/获取List
+        getList(pageIndex, rows, callback) {
+            this.$propertyApi.personManagement.visitor
+                .list({
+                    pageNum: pageIndex,
+                    pageSize: rows,
+                    areaId: this.selectForm.areaId,
+                    buildingId: this.selectForm.buildingId,
+                    elementId: this.selectForm.elementId,
+                    roomId: this.selectForm.roomId,
+                    search: this.selectForm.search,
+                    startTime: this.selectForm.startTime,
+                    endTime: this.selectForm.endTime,
+                    status: this.selectForm.status
+                })
+                .then(res => {
+                    if (res.code == 1000) {
+                        this.list = res.data.list;
+                        callback(this.list, res.data.total);
+                    } else {
+                        this.$$alert({
+                            message: res.msg,
+                            type: "error"
+                        });
+                    }
+                });
         },
         del() {
             this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
@@ -327,7 +314,14 @@ export default {
         }
     },
     components: {
-        ctrlPage
+        ctrlPage,
+        Dictionary,
+        areaId,
+        buildingId,
+        elementId,
+        roomId,
+        addDialog,
+        detailDialog
     }
 };
 </script>
